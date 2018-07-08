@@ -42,9 +42,9 @@
 		"dependencies": {
 			"minUI5Version": "1.30.0",
 			"libs": {
-				"sap.ui.layout": {},
+				"sap.m": {},
 				"sap.ui.core": {},
-				"sap.m": {}
+				"sap.ui.layout": {}
 			}
 		},
 		"contentDensities": {
@@ -89,35 +89,40 @@
 					"viewPath": "my.sap_coder_agro_delivery_manager.view",
 					"targetControl": "idFullScreenAppControl",
 					"targetAggregation": "pages"
-				}, {
+				},
+				{
 					"pattern": "Transportations/{sObjectPath}",
 					"name": "Transportation",
 					"view": "Transportation",
 					"viewPath": "my.sap_coder_agro_delivery_manager.view",
 					"targetControl": "idFullScreenAppControl",
 					"targetAggregation": "pages"
-				}, {
+				},
+				{
 					"pattern": "Truck/{sObjectPath}",
 					"name": "Truck",
 					"view": "Truck",
 					"viewPath": "my.sap_coder_agro_delivery_manager.view",
 					"targetControl": "idFullScreenAppControl",
 					"targetAggregation": "pages"
-				}, {
+				},
+				{
 					"pattern": "StorageLocation/{sObjectPath}",
 					"name": "StorageLocation",
 					"view": "StorageLocation",
 					"viewPath": "my.sap_coder_agro_delivery_manager.view",
 					"targetControl": "idFullScreenAppControl",
 					"targetAggregation": "pages"
-				}, {
+				},
+				{
 					"pattern": "ProducingLocation/{sObjectPath}",
 					"name": "ProducingLocation",
 					"view": "ProducingLocation",
 					"viewPath": "my.sap_coder_agro_delivery_manager.view",
 					"targetControl": "idFullScreenAppControl",
 					"targetAggregation": "pages"
-				}, {
+				},
+				{
 					"pattern": "GanttDiagram/{sObjectPath}",
 					"name": "GanttDiagram",
 					"view": "GanttDiagram",
