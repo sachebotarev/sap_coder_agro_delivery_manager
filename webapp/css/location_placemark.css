@@ -1,0 +1,47 @@
+.location_placemark_container {
+    position: relative;
+    display: grid;
+    grid-gap: 0px;
+    grid-template-columns: 16px 16px 16px;
+    font-size: 9px;
+    font-family: arial;
+    font-weight: bold;
+    width: 46px;
+    height: 46px;
+}
+
+.location_placemark_container_selected {
+    border: 1px dashed #DC143C;
+}
+
+.location_placemark_top {
+    grid-column: 1 / 4;
+    grid-row: 1;
+    /*border: solid black;
+        border-width: 1px 1px 1px 1px;*/
+    display: flex;
+    justify-content: left;
+    align-items: center;
+}
+
+.location_placemark_bottom {
+    grid-column: 1 / 4;
+    grid-row: 2;
+    /*border: solid black;
+        border-width: 1px 1px 1px 1px;*/
+}
+
+.location_placemark_index {
+    position: absolute;
+    font-size: 10px;
+    top: 5px;
+    left: 10px;
+    color: #930a0a;
+}
+
+.location_placemark_accepted {
+    position: absolute;
+    font-size: 10px;
+    top: 0px;
+    right: 3px;
+}

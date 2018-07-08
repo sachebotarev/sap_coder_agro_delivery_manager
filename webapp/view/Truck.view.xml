@@ -1,0 +1,77 @@
+<mvc:View controllerName="my.sap_coder_agro_delivery_manager.controller.Truck" xmlns:html="http://www.w3.org/1999/xhtml" xmlns="sap.m"
+	xmlns:mvc="sap.ui.core.mvc" xmlns:semantic="sap.m.semantic" xmlns:footerbar="sap.ushell.ui.footerbar" xmlns:form="sap.ui.layout.form"
+	xmlns:core="sap.ui.core" xmlns:unif="sap.ui.unified" xmlns:tbl="sap.ui.table" xmlns:unified="sap.ui.unified">
+	<semantic:MasterPage title="Truck Details" showNavButton="true" navButtonPress="onNavBack">
+		<semantic:content>
+			<PullToRefresh id="pullToRefresh" visible="{device>/support/touch}" refresh="onRefresh"/>
+			<ObjectHeader id="objectHeader" title="Truck # {TruckNum}" icon="sap-icon://visits">
+				<attributes>
+					<ObjectAttribute title="Truck:" text="{TruckNum} ({Description} - {LicensePlateNum})"/>
+					<ObjectAttribute title="Carrier:" text="{Carrier} ({CarrierDetails/Name})"/>
+				</attributes>
+				<statuses>
+					<ObjectStatus text="{Status}" state="{path:'Status', formatter:'.formatter.transportationStatusState'}"
+						icon="{path:'Status', formatter:'.formatter.transportationStatusIcon'}"/>
+				</statuses>
+			</ObjectHeader>
+			<IconTabBar id="iconTabBar" class="sapUiResponsiveContentPadding">
+				<items>
+					<IconTabFilter icon="sap-icon://hint" tooltip="{Visit Details}">
+						<tbl:Table selectionMode="MultiToggle" rows="{TransportationDetails}" visibleRowCount="10" enableCellFilter="true" rowActionCount="1"
+							rowSelectionChange="onTransportationAssignmentTableRawSelected">
+							<tbl:columns>
+								<tbl:Column>
+									<Label text="TransportationNum"/>
+									<tbl:template>
+										<CheckBox selected="{TransportationNum}" wrapping="false"/>
+									</tbl:template>
+								</tbl:Column>
+								<tbl:Column>
+									<Label text="ShipFrom"/>
+									<tbl:template>
+										<Label text="{ShipFrom}"/>
+									</tbl:template>
+								</tbl:Column>
+							</tbl:columns>
+							<tbl:rowActionTemplate>
+								<tbl:RowAction>
+									<tbl:items>
+										<tbl:RowActionItem type="Delete" press="onLineDelete"/>
+									</tbl:items>
+								</tbl:RowAction>
+							</tbl:rowActionTemplate>
+						</tbl:Table>
+					</IconTabFilter>
+					<IconTabFilter icon="sap-icon://fridge" tooltip="Equipment">
+						<PlanningCalendar id="PC1" startDate="{path: 'Calendar>/startDate'}" rows="{path: 'Calendar>/people'}" appointmentsVisualization="Filled"
+							appointmentSelect="handleAppointmentSelect" showEmptyIntervalHeaders="false" showWeekNumbers="true">
+							<toolbarContent>
+								<Title text="Title" titleStyle="H4"/>
+							</toolbarContent>
+							<rows>
+								<PlanningCalendarRow icon="{Calendar>pic}" title="{Calendar>name}" text="{Calendar>role}"
+									appointments="{path : 'Calendar>appointments', templateShareable: 'true'}" intervalHeaders="{path: 'Calendar>headers', templateShareable: 'true'}">
+									<customData>
+										<core:CustomData key="emp-name" value="{Calendar>name}" writeToDom="true"/>
+									</customData>
+									<appointments>
+										<unified:CalendarAppointment startDate="{Calendar>start}" endDate="{Calendar>end}" icon="{Calendar>pic}" title="{Calendar>title}" text="{Calendar>info}" type="{Calendar>type}"
+											tentative="{Calendar>tentative}"></unified:CalendarAppointment>
+									</appointments>
+									<intervalHeaders>
+										<unified:CalendarAppointment startDate="{Calendar>start}" endDate="{Calendar>end}" icon="{Calendar>pic}" title="{Calendar>title}" type="{Calendar>type}"></unified:CalendarAppointment>
+									</intervalHeaders>
+								</PlanningCalendarRow>
+							</rows>
+						</PlanningCalendar>
+					</IconTabFilter>
+					<IconTabFilter icon="sap-icon://sales-order" tooltip="Sales Orders"></IconTabFilter>
+				</items>
+			</IconTabBar>
+		</semantic:content>
+		<semantic:customFooterContent>
+			<Button icon="sap-icon://decline" text="Cancel" press="onTransporationCancel"/>
+			<Button icon="sap-icon://accept" text="Release" press="onTransporationRelease"/>
+		</semantic:customFooterContent>
+	</semantic:MasterPage>
+</mvc:View>

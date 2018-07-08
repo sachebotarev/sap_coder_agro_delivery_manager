@@ -1,0 +1,7 @@
+<mvc:View
+	controllerName="my.sap_coder_agro_delivery_manager.controller.SplitApp"
+	xmlns:mvc="sap.ui.core.mvc"
+	displayBlock="true"
+	xmlns="sap.m">
+	<SplitApp id="idSplitAppControl" />
+</mvc:View>

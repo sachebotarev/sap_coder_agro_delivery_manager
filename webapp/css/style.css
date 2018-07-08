@@ -1,0 +1,58 @@
+/* Enter your custom styles here */
+@import 'truck_placemark.css';
+@import 'location_placemark.css';
+@import 'map_placemark.css';
+#menu {
+    position: absolute;
+    width: 12em;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    padding-bottom: 10px;
+    z-index: 2
+}
+
+#menu ul {
+    list-style-type: none;
+    padding: 20px;
+    margin: 0;
+}
+
+input {
+    width: 10em;
+}
+
+
+/* Квадратный макет метки */
+
+.square_layout {
+    position: absolute;
+    /*display:flex;
+    align-items:flex-start;*/
+    left: -23px;
+    top: -23px;
+    width: 46px;
+    height: 46px;
+    line-height: 46px;
+    border: 2px solid #218703;
+    /*background-color: #F8FDF7;*/
+    color: #218703;
+}
+
+.my-hint {
+    display: inline-block;
+    padding: 5px;
+    /*height: 35px;*/
+    position: relative;
+    left: 0px;
+    width: 200px;
+    font-size: 11px;
+    line-height: 17px;
+    color: #333333;
+    text-align: left;
+    vertical-align: top;
+    background-color: #faefb6;
+    border: 1px solid #CDB7B5;
+    border-radius: 10px;
+    font-family: Arial;
+}

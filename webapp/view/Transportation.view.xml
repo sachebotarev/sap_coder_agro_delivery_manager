@@ -1,0 +1,243 @@
+<mvc:View controllerName="my.sap_coder_agro_delivery_manager.controller.Transportation" xmlns:html="http://www.w3.org/1999/xhtml"
+	xmlns="sap.m" xmlns:mvc="sap.ui.core.mvc" xmlns:semantic="sap.m.semantic" xmlns:footerbar="sap.ushell.ui.footerbar"
+	xmlns:form="sap.ui.layout.form" xmlns:core="sap.ui.core" xmlns:unified="sap.ui.unified" xmlns:tbl="sap.ui.table">
+	<semantic:MasterPage title="Transportation Details" showNavButton="true" navButtonPress="onNavBack">
+		<semantic:content>
+			<PullToRefresh id="pullToRefresh" visible="{device>/support/touch}" refresh="onRefresh"/>
+			<ObjectHeader id="objectHeader" title="Transportation # {TransportationNum}" icon="sap-icon://visits">
+				<attributes>
+					<ObjectAttribute title="Shiping details"
+						text="From {ShipFrom} - {ShippingLocationDetails/Description} To {ShipTo} - {ShippingLocationDetails1/Description}"/>
+				</attributes>
+				<statuses>
+					<ObjectStatus text="{Status}" state="{path:'Status', formatter:'.formatter.transportationStatusState'}"
+						icon="{path:'Status', formatter:'.formatter.transportationStatusIcon'}"/>
+				</statuses>
+			</ObjectHeader>
+			<IconTabBar id="iconTabBar" class="sapUiResponsiveContentPadding">
+				<items>
+					<IconTabFilter icon="sap-icon://hint" tooltip="{Visit Details}">
+						<!--<Toolbar>
+							<Button text="Refresh" press="onTest"/>
+							<Button text="Prepare Step 1" press="onTest"/>
+							<Button text="Prepare Step 2" press="onTest"/>
+							<Button text="Send notifications" press="onTest"/>
+						</Toolbar>-->
+						<html:div id="map" style="width: 100%; height: 400px; padding: 0; margin: 0;"></html:div>
+						<IconTabBar>
+							<items>
+								<IconTabFilter text="Trucks">
+									<tbl:Table selectionMode="None" rows="{TransportationAssignmentDetails}" visibleRowCount="4" enableCellFilter="true" rowActionCount="1"
+										rowSelectionChange="onTransportationAssignmentTableRawSelected">
+										<tbl:columns>
+											<tbl:Column width="3rem">
+												<Label text=""/>
+												<tbl:template>
+													<CheckBox selected="{Selected}" wrapping="false"/>
+												</tbl:template>
+											</tbl:Column>
+											<tbl:Column width="4rem">
+												<Label text="Status"/>
+												<tbl:template>
+													<core:Icon size="1rem" src="{=(${Status} === 'ACCEPTED') ? 'sap-icon://accept' : ''}"
+														class="sapUiSmallMarginBegin sapUiSmallMarginTopBottom"/>
+												</tbl:template>
+											</tbl:Column>
+											<tbl:Column width="4rem">
+												<Label text="Index"/>
+												<tbl:template>
+													<Label text="{AssignmentIndex}"/>
+												</tbl:template>
+											</tbl:Column>
+											<tbl:Column sortProperty="Truck" filterProperty="Truck" defaultFilterOperator="StartsWith">
+												<Label text="Truck"/>
+												<tbl:template>
+													<Text text="{Truck} ({TruckDetails/Description}" wrapping="false"/>
+												</tbl:template>
+											</tbl:Column>
+											<tbl:Column width="4rem">
+												<Label text="Preferred"/>
+												<tbl:template>
+													<core:Icon size="1rem" src="{=(${Preferred}) ? 'sap-icon://favorite' : ''}"
+														class="sapUiSmallMarginBegin sapUiSmallMarginTopBottom"/>
+												</tbl:template>
+											</tbl:Column>
+											<tbl:Column width="7rem">
+												<Label text="Arrival Time"/>
+												<tbl:template>
+													<Label text="{ArrivalTimeMinutes} min"/>
+												</tbl:template>
+											</tbl:Column>
+											<tbl:Column>
+												<Label text="Price"/>
+												<tbl:template>
+													<Label text="{ProposedPrice} RUB"/>
+												</tbl:template>
+											</tbl:Column>
+											<tbl:Column sortProperty="Capacity" filterProperty="Capacity" defaultFilterOperator="StartsWith">
+												<Label text="Capacity"/>
+												<tbl:template>
+													<Text text="{TruckDetails/MaxWeight} TON" wrapping="false"/>
+												</tbl:template>
+											</tbl:Column>
+											<tbl:Column id="Carrier" sortProperty="Carrier" filterProperty="Carrier" defaultFilterOperator="StartsWith">
+												<Label text="Carrier"/>
+												<tbl:template>
+													<Text text="{TruckDetails/Carrier} ({TruckDetails/CarrierDetails/Name})" wrapping="false"/>
+												</tbl:template>
+											</tbl:Column>
+											<tbl:Column id="ReputationIndex" sortProperty="ReputationIndex" filterProperty="ReputationIndex" defaultFilterOperator="StartsWith">
+												<Label text="Reputation"/>
+												<tbl:template>
+													<RatingIndicator maxValue="5" class="sapUiSmallMarginBottom" value="{ReputationIndex}" editable="true"/>
+												</tbl:template>
+											</tbl:Column>
+										</tbl:columns>
+										<tbl:rowActionTemplate>
+											<tbl:RowAction>
+												<tbl:items>
+													<tbl:RowActionItem type="Delete" press="onLineDelete"/>
+												</tbl:items>
+											</tbl:RowAction>
+										</tbl:rowActionTemplate>
+									</tbl:Table>
+								</IconTabFilter>
+								<IconTabFilter text="Storage Locations">
+									<tbl:Table selectionMode="None" rows="{TransportationLocationAssignmentDetails}" visibleRowCount="4" enableCellFilter="true"
+										rowActionCount="1" rowSelectionChange="onTransportationAssignmentTableRawSelected">
+										<!--<tbl:toolbar>
+											<Toolbar>
+												<Title id="title1" text="Storage Locations"/>
+												<ToolbarSpacer/>
+												<Button text="Approve" press="onChangesApprove"/>
+												<Button text="Reject" press="onChangesReject"/>
+												<Button text="Save" press="onSaveChanges"/>
+												<Button text="Copy" press="onCopyLines"/>
+											</Toolbar>
+										</tbl:toolbar>-->
+										<tbl:columns>
+											<tbl:Column width="3rem">
+												<Label text="Sel."/>
+												<tbl:template>
+													<CheckBox selected="{Selected}" wrapping="false"/>
+												</tbl:template>
+											</tbl:Column>
+											<tbl:Column width="4rem">
+												<Label text="Status"/>
+												<tbl:template>
+													<core:Icon size="1rem" src="{=(${Status} === 'ACCEPTED') ? 'sap-icon://accept' : ''}"
+														class="sapUiSmallMarginBegin sapUiSmallMarginTopBottom"/>
+												</tbl:template>
+											</tbl:Column>
+											<tbl:Column width="4rem">
+												<Label text="Index"/>
+												<tbl:template>
+													<Label text="{AssignmentIndex}"/>
+												</tbl:template>
+											</tbl:Column>
+											<tbl:Column>
+												<Label text="Location"/>
+												<tbl:template>
+													<Text text="{ShipToLocation} ({ShippingLocation/Description})" wrapping="false"/>
+												</tbl:template>
+											</tbl:Column>
+											<tbl:Column>
+												<Label text="Total Time"/>
+												<tbl:template>
+													<Text text="{ProcessingTimeMinutes} min" wrapping="false"/>
+												</tbl:template>
+											</tbl:Column>
+											<tbl:Column>
+												<Label text="Travel Time"/>
+												<tbl:template>
+													<Text text="{TravelTimeMinutes} min" wrapping="false"/>
+												</tbl:template>
+											</tbl:Column>
+											<tbl:Column>
+												<Label text="Queue Time"/>
+												<tbl:template>
+													<Text text="{UnloadQueueTimeMinutes} min" wrapping="false"/>
+												</tbl:template>
+											</tbl:Column>
+											<tbl:Column>
+												<Label text="Unload Time"/>
+												<tbl:template>
+													<Text text="{UnloadTimeMinutes} min" wrapping="false"/>
+												</tbl:template>
+											</tbl:Column>
+										</tbl:columns>
+										<tbl:rowActionTemplate>
+											<tbl:RowAction>
+												<tbl:items>
+													<tbl:RowActionItem type="Delete" press="onLineDelete"/>
+												</tbl:items>
+											</tbl:RowAction>
+										</tbl:rowActionTemplate>
+									</tbl:Table>
+								</IconTabFilter>
+							</items>
+						</IconTabBar>
+					</IconTabFilter>
+					<IconTabFilter icon="sap-icon://fridge" tooltip="Equipment">
+						<form:Form>
+							<form:layout>
+								<form:ResponsiveGridLayout/>
+							</form:layout>
+							<form:formContainers>
+								<form:FormContainer>
+									<form:FormElement label="Kick-off Date">
+										<form:fields>
+											<DateTimePicker value="{path:'KickOffDate', type:'sap.ui.model.type.DateTime', formatOptions: { style: 'short', strictParsing: true}}"/>
+										</form:fields>
+									</form:FormElement>
+									<form:FormElement label="Ship From">
+										<form:fields>
+											<Input value="{ShipFrom}"/>
+										</form:fields>
+									</form:FormElement>
+								</form:FormContainer>
+							</form:formContainers>
+						</form:Form>
+					</IconTabFilter>
+					<IconTabFilter icon="sap-icon://sales-order" tooltip="Sales Orders">
+						<PlanningCalendar startDate="{path: 'Calendar>/startDate'}" rows="{path: 'Calendar>/rows'}" appointmentsVisualization="Filled"
+							appointmentSelect="handleAppointmentSelect" showEmptyIntervalHeaders="false" showWeekNumbers="true" viewKey="H">
+							<toolbarContent>
+								<Title text="Title" titleStyle="H4"/>
+							</toolbarContent>
+							<views>
+								<PlanningCalendarView key="H" intervalType="Hour" description="hours view" intervalsS="2" intervalsM="2" intervalsL="2"
+									showSubIntervals="true"></PlanningCalendarView>
+								<PlanningCalendarView key="D" intervalType="Day" description="days view" intervalsS="1" intervalsM="3" intervalsL="7"
+									showSubIntervals="true"></PlanningCalendarView>
+							</views>
+							<rows>
+								<PlanningCalendarRow icon="{Calendar>pic}" title="{Calendar>name}" text="{Calendar>role}"
+									appointments="{path : 'Calendar>appointments', templateShareable: 'true'}"
+									intervalHeaders="{path: 'Calendar>headers', templateShareable: 'true'}">
+									<customData>
+										<core:CustomData key="emp-name" value="{Calendar>name}" writeToDom="true"/>
+									</customData>
+									<appointments>
+										<unified:CalendarAppointment startDate="{Calendar>start}" endDate="{Calendar>end}" icon="{Calendar>pic}" title="{Calendar>title}"
+											text="{Calendar>info}" type="{Calendar>type}" tentative="{Calendar>tentative}"></unified:CalendarAppointment>
+									</appointments>
+									<intervalHeaders>
+										<unified:CalendarAppointment startDate="{Calendar>start}" endDate="{Calendar>end}" icon="{Calendar>pic}" title="{Calendar>title}"
+											type="{Calendar>type}"></unified:CalendarAppointment>
+									</intervalHeaders>
+								</PlanningCalendarRow>
+							</rows>
+						</PlanningCalendar>
+					</IconTabFilter>
+				</items>
+			</IconTabBar>
+		</semantic:content>
+		<semantic:customFooterContent>
+			<Button icon="sap-icon://decline" text="Cancel" press="onTransporationCancel"/>
+			<Button icon="sap-icon://accept" text="Release" press="onTransporationRelease"/>
+			<Button icon="sap-icon://accept" text="Send Requests" press="onTransporationSendRequests"/>
+			<Button icon="sap-icon://save" text="Save" press="onTransporationSave"/>
+		</semantic:customFooterContent>
+	</semantic:MasterPage>
+</mvc:View>

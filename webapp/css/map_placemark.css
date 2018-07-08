@@ -1,0 +1,90 @@
+.map_placemark_container {
+    position: relative;
+    display: grid;
+    grid-gap: 0px;
+    grid-template-columns: 38px 12px;
+    font-size: 9px;
+    font-family: arial;
+    font-weight: bold;
+    width: 48px;
+    height: 48px;
+}
+.map_placemark_container_selected {
+    border: 1px dashed #DC143C;
+}
+.map_placemark_container_inactive {
+    opacity: 0.3;
+}
+.map_placemark_icon {
+    grid-column: 1;
+    grid-row: 1;
+    /*border: solid black;
+        border-width: 1px 1px 1px 1px;*/
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    opacity: 0.8;
+
+}
+.map_placemark_icon_no_right_details {
+    grid-column: 1 / 3;
+    grid-row: 1;
+    /*border: solid black;
+        border-width: 1px 1px 1px 1px;*/
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    opacity: 0.8;
+}
+.map_placemark_bottom_content {
+    grid-column: 1 / 3;
+    grid-row: 2;
+    /*border: solid black;
+        border-width: 1px 1px 1px 1px;*/
+}
+.map_placemark_right_content {
+    grid-column: 2;
+    grid-row: 1;
+    /*border: solid black;
+        border-width: 1px 1px 1px 1px;*/
+    /*display: flex;
+    justify-content: right;
+    align-items: center;*/
+}
+.map_placemark_center {
+    position: absolute;
+    font-size: 10px;
+    top: 4px;
+    left: 4px;
+    color: #930a0a;
+}
+.map_placemark_top_left {
+    position: absolute;
+    font-size: 10px;
+    top: 0px;
+    left: 0px;
+    color: #930a0a;
+}
+.map_placemark_bottom_right {
+    position: absolute;
+    font-size: 10px;
+    bottom: 0px;
+    right: 0px;
+    color: #930a0a;
+}
+.map_placemark_top_right {
+    position: absolute;
+    font-size: 10px;
+    top: -4px;
+    right: -3px;
+    color: #930a0a;
+}
+.map_placemark_detail {
+	padding-left: 1px;
+	padding-right: 1px;
+}
+.map_placemark_baloon_content {
+    margin: 2px;
+}
+
+

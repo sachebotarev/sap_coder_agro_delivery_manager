@@ -1,0 +1,27 @@
+<mvc:View controllerName="my.sap_coder_agro_delivery_manager.controller.GanttDiagram" xmlns:html="http://www.w3.org/1999/xhtml"
+	xmlns="sap.m" xmlns:mvc="sap.ui.core.mvc" xmlns:semantic="sap.m.semantic" xmlns:footerbar="sap.ushell.ui.footerbar"
+	xmlns:form="sap.ui.layout.form" xmlns:core="sap.ui.core" xmlns:unif="sap.ui.unified" xmlns:tbl="sap.ui.table" xmlns:gantt="sap.gantt">
+	<gantt:GanttChartContainer id="GanttChartContainerId">
+		<gantt:ganttCharts>
+			<gantt:GanttChartWithTable id="ganttView" shapeDragEnd="handleShapeDragEnd">
+				<gantt:columns>
+					<tbl:Column id="nameColumn" label="Name" width="220px">
+						<tbl:template>
+							<Label text="{test>name}"/>
+						</tbl:template>
+					</tbl:Column>
+					<tbl:Column id="startDateColumn" label="Start Date" width="160px">
+						<tbl:template>
+							<Label text="{test>order/0/startTime}"/>
+						</tbl:template>
+					</tbl:Column>
+					<tbl:Column id="endDateColumn" label="End Date" width="160px">
+						<tbl:template>
+							<Label text="{test>order/0/endTime}"/>
+						</tbl:template>
+					</tbl:Column>
+				</gantt:columns>
+			</gantt:GanttChartWithTable>
+		</gantt:ganttCharts>
+	</gantt:GanttChartContainer>
+</mvc:View>

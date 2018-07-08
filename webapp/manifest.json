@@ -1,0 +1,167 @@
+{
+	"_version": "1.8.0",
+	"sap.app": {
+		"id": "my.sap_coder_agro_delivery_manager",
+		"type": "application",
+		"i18n": "i18n/i18n.properties",
+		"applicationVersion": {
+			"version": "1.0.0"
+		},
+		"title": "{{appTitle}}",
+		"description": "{{appDescription}}",
+		"sourceTemplate": {
+			"id": "ui5template.basicSAPUI5ApplicationProject",
+			"version": "1.40.12"
+		}
+	},
+	"sap.ui": {
+		"technology": "UI5",
+		"icons": {
+			"icon": "",
+			"favIcon": "",
+			"phone": "",
+			"phone@2": "",
+			"tablet": "",
+			"tablet@2": ""
+		},
+		"deviceTypes": {
+			"desktop": true,
+			"tablet": true,
+			"phone": true
+		},
+		"supportedThemes": [
+			"sap_hcb",
+			"sap_belize"
+		]
+	},
+	"sap.ui5": {
+		"rootView": {
+			"viewName": "my.sap_coder_agro_delivery_manager.view.FullScreenApp",
+			"type": "XML"
+		},
+		"dependencies": {
+			"minUI5Version": "1.30.0",
+			"libs": {
+				"sap.ui.layout": {},
+				"sap.ui.core": {},
+				"sap.m": {}
+			}
+		},
+		"contentDensities": {
+			"compact": true,
+			"cozy": true
+		},
+		"models": {
+			"i18n": {
+				"type": "sap.ui.model.resource.ResourceModel",
+				"settings": {
+					"bundleName": "my.sap_coder_agro_delivery_manager.i18n.i18n"
+				}
+			}
+		},
+		"resources": {
+			"css": [
+				{
+					"uri": "css/style.css"
+				}
+			]
+		},
+		"routing": {
+			"config": {
+				"routerClass": "sap.m.routing.Router",
+				"viewType": "XML",
+				"viewPath": "my.sap_coder_agro_delivery_manager.view",
+				"targetAggregation": "pages",
+				"clearTarget": false,
+				"bypassed": {
+					"target": [
+						"master",
+						"notFound"
+					]
+				},
+				"async": true
+			},
+			"routes": [
+				{
+					"pattern": "",
+					"name": "TransportationList",
+					"view": "TransportationList",
+					"viewPath": "my.sap_coder_agro_delivery_manager.view",
+					"targetControl": "idFullScreenAppControl",
+					"targetAggregation": "pages"
+				}, {
+					"pattern": "Transportations/{sObjectPath}",
+					"name": "Transportation",
+					"view": "Transportation",
+					"viewPath": "my.sap_coder_agro_delivery_manager.view",
+					"targetControl": "idFullScreenAppControl",
+					"targetAggregation": "pages"
+				}, {
+					"pattern": "Truck/{sObjectPath}",
+					"name": "Truck",
+					"view": "Truck",
+					"viewPath": "my.sap_coder_agro_delivery_manager.view",
+					"targetControl": "idFullScreenAppControl",
+					"targetAggregation": "pages"
+				}, {
+					"pattern": "StorageLocation/{sObjectPath}",
+					"name": "StorageLocation",
+					"view": "StorageLocation",
+					"viewPath": "my.sap_coder_agro_delivery_manager.view",
+					"targetControl": "idFullScreenAppControl",
+					"targetAggregation": "pages"
+				}, {
+					"pattern": "ProducingLocation/{sObjectPath}",
+					"name": "ProducingLocation",
+					"view": "ProducingLocation",
+					"viewPath": "my.sap_coder_agro_delivery_manager.view",
+					"targetControl": "idFullScreenAppControl",
+					"targetAggregation": "pages"
+				}, {
+					"pattern": "GanttDiagram/{sObjectPath}",
+					"name": "GanttDiagram",
+					"view": "GanttDiagram",
+					"viewPath": "my.sap_coder_agro_delivery_manager.view",
+					"targetControl": "idFullScreenAppControl",
+					"targetAggregation": "pages"
+				}
+			],
+			"targets": {
+				"AppSplitView": {
+					"viewName": "AppSplitView",
+					"viewId": "AppSplitView"
+				},
+				"TransportationList": {
+					"viewName": "TransportationList",
+					"viewId": "TransportationList",
+					"viewLevel": 1
+				},
+				"Transportation": {
+					"viewName": "Transportation",
+					"viewId": "Transportation",
+					"viewLevel": 1
+				},
+				"Truck": {
+					"viewName": "Truck",
+					"viewId": "Truck",
+					"viewLevel": 1
+				},
+				"StorageLocation": {
+					"viewName": "StorageLocation",
+					"viewId": "StorageLocation",
+					"viewLevel": 1
+				},
+				"ProducingLocation": {
+					"viewName": "ProducingLocation",
+					"viewId": "ProducingLocation",
+					"viewLevel": 1
+				},
+				"GanttDiagram": {
+					"viewName": "GanttDiagram",
+					"viewId": "GanttDiagram",
+					"viewLevel": 1
+				}
+			}
+		}
+	}
+}
