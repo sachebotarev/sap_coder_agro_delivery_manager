@@ -92,7 +92,7 @@ sap.ui.define([
 					aPlacemarkActions: [new PlacemarkAction({
 						oContext: new sap.ui.model.Context(this._oODataModel, this._sTransportationPath),
 						oParams: {
-							fnText: (oContext) => "Location Details",
+							fnText: (oContext) => "Details",
 							fnOnPress: (
 									oContext
 								) =>
@@ -212,7 +212,7 @@ sap.ui.define([
 								aPlacemarkActions: [new PlacemarkAction({
 										oContext: new sap.ui.model.Context(this._oODataModel, "/" + sItemPath),
 										oParams: {
-											fnText: (oContext) => "Accept Transportation",
+											fnText: (oContext) => "Assign Truck",
 											fnOnPress: (
 													oContext
 												) =>
@@ -222,7 +222,7 @@ sap.ui.define([
 									new PlacemarkAction({
 										oContext: new sap.ui.model.Context(this._oODataModel, "/" + sItemPath),
 										oParams: {
-											fnText: (oContext) => "Truck Details",
+											fnText: (oContext) => "Details",
 											fnOnPress: (
 													oContext
 												) =>
@@ -315,7 +315,7 @@ sap.ui.define([
 								aPlacemarkActions: [new PlacemarkAction({
 									oContext: new sap.ui.model.Context(this._oODataModel, "/" + sItemPath),
 									oParams: {
-										fnText: (oContext) => "Storage Location Details",
+										fnText: (oContext) => "Details",
 										fnOnPress: (
 												oContext
 											) =>

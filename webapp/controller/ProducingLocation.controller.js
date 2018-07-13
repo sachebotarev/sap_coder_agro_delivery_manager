@@ -2,7 +2,7 @@ sap.ui.define([
 	"sap/ui/core/mvc/Controller",
 	"sap/ui/model/json/JSONModel",
 	"my/sap_coder_agro_delivery_manager/model/formatter",
-	"my/sap_coder_agro_delivery_manager/control/YandexMap",
+	"my/sapui5_components_library/yandex/maps/YandexMap",
 	"my/sap_coder_agro_delivery_manager/model/PlanningCalendarService"
 ], function(Controller, JSONModel, formatter, YandexMap, PlanningCalendarService) {
 	"use strict";
