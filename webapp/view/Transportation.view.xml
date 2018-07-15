@@ -192,7 +192,22 @@
 									</form:FormElement>
 									<form:FormElement label="Ship From">
 										<form:fields>
-											<Input value="{ShipFrom}"/>
+											<Text text="{ShipFrom} ({ShippingLocationDetails/Description})"/>
+										</form:fields>
+									</form:FormElement>
+									<form:FormElement label="Ship To">
+										<form:fields>
+											<Text text="{ShipTo} ({ShippingLocationDetails1/Description})"/>
+										</form:fields>
+									</form:FormElement>
+									<form:FormElement label="Truck">
+										<form:fields>
+											<Text text="{Truck} ({TruckDetails/Description})"/>
+										</form:fields>
+									</form:FormElement>
+									<form:FormElement label="Carrier">
+										<form:fields>
+											<Text text="{TruckDetails/Carrier} ({TruckDetails/CarrierDetails/Name})"/>
 										</form:fields>
 									</form:FormElement>
 								</form:FormContainer>
@@ -202,9 +217,6 @@
 					<IconTabFilter icon="sap-icon://sales-order" tooltip="Sales Orders">
 						<PlanningCalendar startDate="{path: 'Calendar>/startDate'}" rows="{path: 'Calendar>/rows'}" appointmentsVisualization="Filled"
 							appointmentSelect="handleAppointmentSelect" showEmptyIntervalHeaders="false" showWeekNumbers="true" viewKey="H">
-							<toolbarContent>
-								<Title text="Title" titleStyle="H4"/>
-							</toolbarContent>
 							<views>
 								<PlanningCalendarView key="H" intervalType="Hour" description="hours view" intervalsS="2" intervalsM="2" intervalsL="2"
 									showSubIntervals="true"></PlanningCalendarView>
@@ -229,6 +241,169 @@
 								</PlanningCalendarRow>
 							</rows>
 						</PlanningCalendar>
+						<form:Form>
+							<form:layout>
+								<form:ResponsiveGridLayout/>
+							</form:layout>
+							<form:formContainers>
+								<form:FormContainer title="Planned Time Line">
+									<form:FormElement label="Kicked-off at" visible="{=(${KickOffDate} !== null)}">
+										<form:fields>
+											<!--pattern: 'HH:mm / yyyy-MM-dd'-->
+											<Text text="{path:'KickOffDate', type:'sap.ui.model.type.DateTime', formatOptions: { pattern: 'HH:mm' }}"/>
+										</form:fields>
+									</form:FormElement>
+									<form:FormElement label="Assignment Time" visible="{=(${AssignmentTimeMinutes} !== null)}">
+										<form:fields>
+											<Text text="{AssignmentTimeMinutes} minutes"/> 
+										</form:fields>
+									</form:FormElement>
+									<form:FormElement label="Truck Assigned at" visible="{=(${TruckAssignedDateTime} !== null)}">
+										<form:fields>
+											<Text text="{path:'TruckAssignedDateTime', type:'sap.ui.model.type.DateTime', formatOptions: { pattern: 'HH:mm' }}"/>
+										</form:fields>
+									</form:FormElement>
+									<form:FormElement label="Arrival Time" visible="{=(${ArrivalTimeMinutes} !== null)}">
+										<form:fields>
+											<Text text="{ArrivalTimeMinutes} minutes"/> 
+										</form:fields>
+									</form:FormElement>
+									<form:FormElement label="Arrived to Loading at" visible="{=(${StartDateTime} !== null)}">
+										<form:fields>
+											<Text text="{path:'StartDateTime', type:'sap.ui.model.type.DateTime', formatOptions: { pattern: 'HH:mm' }}"/>
+										</form:fields>
+									</form:FormElement>
+									<form:FormElement label="Load Queue time" visible="{=(${LoadQueueTimeMinutes} !== null)}">
+										<form:fields>
+											<Text text="{LoadQueueTimeMinutes} minutes"/> 
+										</form:fields>
+									</form:FormElement>
+									<form:FormElement label="Load starts at" visible="{=(${LoadStartDateTime} !== null)}">
+										<form:fields>
+											<Text text="{path:'LoadStartDateTime', type:'sap.ui.model.type.DateTime', formatOptions: { pattern: 'HH:mm' }}"/>
+										</form:fields>
+									</form:FormElement>
+									<form:FormElement label="Load time" visible="{=(${LoadTimeMinutes} !== null)}">
+										<form:fields>
+											<Text text="{LoadTimeMinutes} minutes"/> 
+										</form:fields>
+									</form:FormElement>
+									<form:FormElement label="Travel starts at" visible="{=(${TravelStartDateTime} !== null)}">
+										<form:fields>
+											<Text text="{path:'TravelStartDateTime', type:'sap.ui.model.type.DateTime', formatOptions: { pattern: 'HH:mm' }}"/>
+										</form:fields>
+									</form:FormElement>
+									<form:FormElement label="Travel time" visible="{=(${TravelTimeMinutes} !== null)}">
+										<form:fields>
+											<Text text="{TravelTimeMinutes} minutes"/> 
+										</form:fields>
+									</form:FormElement>
+									<form:FormElement label="Arrived to Unload at" visible="{=(${UnloadQueueStartDateTime} !== null)}">
+										<form:fields>
+											<Text text="{path:'UnloadQueueStartDateTime', type:'sap.ui.model.type.DateTime', formatOptions: { pattern: 'HH:mm' }}"/>
+										</form:fields>
+									</form:FormElement>
+									<form:FormElement label="Unload Queue time" visible="{=(${UnloadQueueTimeMinutes} !== null)}">
+										<form:fields>
+											<Text text="{UnloadQueueTimeMinutes} minutes"/> 
+										</form:fields>
+									</form:FormElement>
+									<form:FormElement label="Unload Stars at" visible="{=(${UnloadStartDateTime} !== null)}">
+										<form:fields>
+											<Text text="{path:'UnloadStartDateTime', type:'sap.ui.model.type.DateTime', formatOptions: { pattern: 'HH:mm' }}"/>
+										</form:fields>
+									</form:FormElement>
+									<form:FormElement label="Unload time" visible="{=(${UnloadTimeMinutes} !== null)}">
+										<form:fields>
+											<Text text="{UnloadTimeMinutes} minutes"/> 
+										</form:fields>
+									</form:FormElement>
+									<form:FormElement label="Finished at" visible="{=(${EndDateTime} !== null)}">
+										<form:fields>
+											<Text text="{path:'EndDateTime', type:'sap.ui.model.type.DateTime', formatOptions: { pattern: 'HH:mm' }}"/>
+										</form:fields>
+									</form:FormElement>
+								</form:FormContainer>
+								<form:FormContainer title="Actual Time Line">
+									<form:FormElement label="Kicked-off at" visible="{=(${KickOffDate} !== null)}">
+										<form:fields>
+											<!--pattern: 'HH:mm / yyyy-MM-dd'-->
+											<Text text="{path:'KickOffDate', type:'sap.ui.model.type.DateTime', formatOptions: { pattern: 'HH:mm' }}"/>
+										</form:fields>
+									</form:FormElement>
+									<form:FormElement label="Assignment Time" visible="{=(${AssignmentTimeActualMinutes} !== null)}">
+										<form:fields>
+											<Text text="{AssignmentTimeActualMinutes} minutes"/> 
+										</form:fields>
+									</form:FormElement>
+									<form:FormElement label="Truck Assigned at" visible="{=(${TruckAssignedActualDateTime} !== null)}">
+										<form:fields>
+											<Text text="{path:'TruckAssignedActualDateTime', type:'sap.ui.model.type.DateTime', formatOptions: { pattern: 'HH:mm' }}"/>
+										</form:fields>
+									</form:FormElement>
+									<form:FormElement label="Arrival Time"  visible="{=(${ArrivalTimeActualMinutes} !== null)}">
+										<form:fields>
+											<Text text="{ArrivalTimeActualMinutes} minutes"/> 
+										</form:fields>
+									</form:FormElement>
+									<form:FormElement label="Arrived to Loading at" visible="{=(${StartActualDateTime} !== null)}">
+										<form:fields>
+											<Text text="{path:'StartActualDateTime', type:'sap.ui.model.type.DateTime', formatOptions: { pattern: 'HH:mm' }}"/>
+										</form:fields>
+									</form:FormElement>
+									<form:FormElement label="Load Queue time" visible="{=(${LoadQueueTimeActualMinutes} !== null)}">
+										<form:fields>
+											<Text text="{LoadQueueTimeActualMinutes} minutes"/> 
+										</form:fields>
+									</form:FormElement>
+									<form:FormElement label="Load starts at" visible="{=(${LoadStartActualDateTime} !== null)}">
+										<form:fields>
+											<Text text="{path:'LoadStartActualDateTime', type:'sap.ui.model.type.DateTime', formatOptions: { pattern: 'HH:mm' }}"/>
+										</form:fields>
+									</form:FormElement>
+									<form:FormElement label="Load time" visible="{=(${LoadTimeActualMinutes} !== null)}">
+										<form:fields>
+											<Text text="{LoadTimeActualMinutes} minutes"/> 
+										</form:fields>
+									</form:FormElement>
+									<form:FormElement label="Travel starts at" visible="{=(${TravelStartActualDateTime} !== null)}">
+										<form:fields>
+											<Text text="{path:'TravelStartActualDateTime', type:'sap.ui.model.type.DateTime', formatOptions: { pattern: 'HH:mm' }}"/>
+										</form:fields>
+									</form:FormElement>
+									<form:FormElement label="Travel time" visible="{=(${TravelTimeActualMinutes} !== null)}">
+										<form:fields>
+											<Text text="{TravelTimeActualMinutes} minutes"/> 
+										</form:fields>
+									</form:FormElement>
+									<form:FormElement label="Arrived to Unload at" visible="{=(${UnloadQueueStartActualDateTime} !== null)}">
+										<form:fields>
+											<Text text="{path:'UnloadQueueStartActualDateTime', type:'sap.ui.model.type.DateTime', formatOptions: { pattern: 'HH:mm' }}"/>
+										</form:fields>
+									</form:FormElement>
+									<form:FormElement label="Unload Queue time" visible="{=(${UnloadQueueTimeActualMinutes} !== null)}">
+										<form:fields>
+											<Text text="{UnloadQueueTimeActualMinutes} minutes"/> 
+										</form:fields>
+									</form:FormElement>
+									<form:FormElement label="Unload Stars at" visible="{=(${UnloadStartActualDateTime} !== null)}">
+										<form:fields>
+											<Text text="{path:'UnloadStartActualDateTime', type:'sap.ui.model.type.DateTime', formatOptions: { pattern: 'HH:mm' }}"/>
+										</form:fields>
+									</form:FormElement>
+									<form:FormElement label="Unload time" visible="{=(${UnloadTimeActualMinutes} !== null)}">
+										<form:fields>
+											<Text text="{UnloadTimeActualMinutes} minutes"/> 
+										</form:fields>
+									</form:FormElement>
+									<form:FormElement label="Finished at" visible="{=(${EndActualDateTime} !== null)}">
+										<form:fields>
+											<Text text="{path:'EndActualDateTime', type:'sap.ui.model.type.DateTime', formatOptions: { pattern: 'HH:mm' }}"/>
+										</form:fields>
+									</form:FormElement>
+								</form:FormContainer>
+							</form:formContainers>
+						</form:Form>
 					</IconTabFilter>
 				</items>
 			</IconTabBar>

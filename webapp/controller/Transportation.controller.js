@@ -13,25 +13,22 @@ sap.ui.define([
 		formatter: formatter,
 
 		onInit: function() {
-			this.getOwnerComponent().getRouter().getRoute("Transportation").attachPatternMatched(this.onRouterObjectMatched, this);
+			this._oGlobalOdataModel = this.getOwnerComponent().getModel();
 			this._oODataModel = this.getOwnerComponent().getModel();
-			this._oYandexMap = new YandexMap();
-
-			this._oYandexMapApiInitialized = $.Deferred();
-			this._oViewBinded = $.Deferred();
-			$.when(this._oViewBinded, this._oYandexMapApiInitialized)
-				.done((sTransporationPath, oYmaps) => this.onMapInit(sTransporationPath));
-
-			this._oYandexMap.initYandexMapsApi().then((oYmaps) => this._oYandexMapApiInitialized.resolve(oYmaps));
-
+			this._oYandexMap = new YandexMap(this.byId("map").getId());
 			this._oCalendarModel = new JSONModel();
 			this._oPlanningCalendarService = new PlanningCalendarService();
 			this.getView().setModel(this._oCalendarModel, "Calendar");
-		},
-		onMapInit: function(sTransporationPath) {
-			let oTransportationMapViewBuilder = new TransportationMapViewBuilder(this._oYandexMap, this.byId("map").getId(), this._oODataModel,
-				sTransporationPath, this);
-			oTransportationMapViewBuilder.buildMapView();
+
+			this.getOwnerComponent().getRouter().getRoute("Transportation").attachPatternMatched(this.onRouterObjectMatched, this);
+
+			this._oYandexMapApiInitialized = $.Deferred();
+			this._oYandexMap.createMapControl().then((oYmaps) => {
+				let oTransportationMapViewBuilder = new TransportationMapViewBuilder(this._oYandexMap, this);
+				oTransportationMapViewBuilder.buildMapView();
+				this._oYandexMapApiInitialized.resolve(oYmaps)
+			});
+
 		},
 		onTest: function() {},
 		onTransporationRelease: function() {
@@ -80,33 +77,43 @@ sap.ui.define([
 				sObjectPath: sShippingLocationPath
 			});
 		},
+		onTransportationAssignmentTableRawSelected: function(oEvent) {
+			if (oEvent.getSource().getSelectedIndices().includes(oEvent.getParameter("rowIndex"))) {
+				this._oGlobalOdataModel.setProperty(oEvent.getParameter("rowContext").getPath() + "/Selected", true);
+			} else {
+				this._oGlobalOdataModel.setProperty(oEvent.getParameter("rowContext").getPath() + "/Selected", false);
+			}
+		},
 		onRouterObjectMatched: function(oEvent) {
 			let sObjectPath = oEvent.getParameter("arguments").sObjectPath;
-			let that = this;
 			if (sObjectPath && sObjectPath !== "") {
-				that.getOwnerComponent().getModel().metadataLoaded()
+				this.getOwnerComponent().getModel().metadataLoaded()
 					.then(() => {
-						that.getView().bindElement({
+						this.getView().bindElement({
 							path: "/" + sObjectPath,
 							parameters: {
-								expand: `TransportationAssignmentDetails/TruckDetails/CarrierDetails,
-										ShippingLocationDetails,ShippingLocationDetails1,TransportationMessageLogDetails,
-										TransportationLocationAssignmentDetails/ShippingLocationDetails,TruckDetails`
+								expand: `ShippingLocationDetails,
+										ShippingLocationDetails1,
+										TransportationMessageLogDetails,
+										TransportationAssignmentDetails/TruckDetails/CarrierDetails,
+										TransportationLocationAssignmentDetails/ShippingLocationDetails,
+										TruckDetails,
+										TruckDetails/CarrierDetails`
 							}
 						});
-						that.getOwnerComponent().getModel().readExt("/" + sObjectPath).then(oData => {
-							that._oCalendarModel.setData(that._oPlanningCalendarService.convertTranportations([oData]));
-							that._oViewBinded.resolve("/" + sObjectPath);
-						});
+						$.when(this._oYandexMapApiInitialized)
+							.done((oYmaps) => this.bindMap("/" + sObjectPath));
+						this.bindCalendar("/" + sObjectPath);
 					});
 			}
 		},
-		onTransportationAssignmentTableRawSelected: function(oEvent) {
-			if (oEvent.getSource().getSelectedIndices().includes(oEvent.getParameter("rowIndex"))) {
-				this._oODataModel.setProperty(oEvent.getParameter("rowContext").getPath() + "/Selected", true);
-			} else {
-				this._oODataModel.setProperty(oEvent.getParameter("rowContext").getPath() + "/Selected", false);
-			}
+		bindMap: function(sTransporationPath) {
+			this._oYandexMap.bindElement(new sap.ui.model.Context(this._oGlobalOdataModel, sTransporationPath));
+		},
+		bindCalendar: function(sTransporationPath) {
+			this._oGlobalOdataModel.attachChange(sTransporationPath, (oEvent) =>
+				this._oCalendarModel.setData(this._oPlanningCalendarService.convertTranportations([this._oGlobalOdataModel.getObject(
+					sTransporationPath)])));
 		}
 	});
 });

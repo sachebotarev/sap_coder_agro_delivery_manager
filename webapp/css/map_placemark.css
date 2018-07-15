@@ -13,7 +13,7 @@
     border: 1px dashed #DC143C;
 }
 .map_placemark_container_inactive {
-    opacity: 0.3;
+    opacity: 0.5;
 }
 .map_placemark_icon {
     grid-column: 1;
@@ -86,5 +86,3 @@
 .map_placemark_baloon_content {
     margin: 2px;
 }
-
-
