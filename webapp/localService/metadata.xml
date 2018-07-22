@@ -1,0 +1,427 @@
+<edmx:Edmx xmlns:edmx="http://schemas.microsoft.com/ado/2007/06/edmx" Version="1.0">
+	<edmx:DataServices xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" m:DataServiceVersion="1.0">
+		<Schema xmlns="http://schemas.microsoft.com/ado/2008/09/edm" Namespace="my.orders.persistance.unit">
+			<EntityType Name="NumberRange">
+				<Key>
+					<PropertyRef Name="NumberRangeKey"/>
+					<PropertyRef Name="NumberRangeSubKey"/>
+				</Key>
+				<Property Name="EndNumber" Type="Edm.String" Nullable="true" MaxLength="30"/>
+				<Property Name="LastNumber" Type="Edm.String" Nullable="true" MaxLength="30"/>
+				<Property Name="NumberRangeKey" Type="Edm.String" Nullable="false" MaxLength="30"/>
+				<Property Name="NumberRangeSubKey" Type="Edm.String" Nullable="false" MaxLength="50"/>
+				<Property Name="StartNumber" Type="Edm.String" Nullable="true" MaxLength="30"/>
+			</EntityType>
+			<EntityType Name="MediaResource" m:HasStream="true">
+				<Key>
+					<PropertyRef Name="MediaResourceUuid"/>
+				</Key>
+				<Property Name="MediaResourceUuid" Type="Edm.String" Nullable="false" MaxLength="255"/>
+				<Property Name="MimeType" Type="Edm.String" Nullable="true" MaxLength="255"/>
+				<Property Name="SourceURI" Type="Edm.String" Nullable="true" MaxLength="255"/>
+				<Property Name="Uuid" Type="Edm.String" Nullable="true" MaxLength="255"/>
+			</EntityType>
+			<EntityType Name="TransportationAssignment">
+				<Key>
+					<PropertyRef Name="Step"/>
+					<PropertyRef Name="Transportation"/>
+					<PropertyRef Name="Truck"/>
+				</Key>
+				<Property Name="ArrivalTimeMinutes" Type="Edm.Int32" Nullable="true"/>
+				<Property Name="ArrivalTimeScore" Type="Edm.Int32" Nullable="true"/>
+				<Property Name="AssignmentIndex" Type="Edm.Int32" Nullable="true"/>
+				<Property Name="AssignmentTimeMinutes" Type="Edm.Int32" Nullable="true"/>
+				<Property Name="LoadQueueTimeMinutes" Type="Edm.Int32" Nullable="true"/>
+				<Property Name="LoadTimeMinutes" Type="Edm.Int32" Nullable="true"/>
+				<Property Name="Preferred" Type="Edm.Boolean" Nullable="true"/>
+				<Property Name="ProposedPrice" Type="Edm.Decimal" Nullable="true" Precision="13" Scale="2"/>
+				<Property Name="ReputationIndex" Type="Edm.Int32" Nullable="true"/>
+				<Property Name="Selected" Type="Edm.Boolean" Nullable="true"/>
+				<Property Name="Status" Type="Edm.String" Nullable="true" MaxLength="30"/>
+				<Property Name="Step" Type="Edm.String" Nullable="false" MaxLength="10"/>
+				<Property Name="Transportation" Type="Edm.String" Nullable="false" MaxLength="10"/>
+				<Property Name="TravelTimeMinutes" Type="Edm.Int32" Nullable="true"/>
+				<Property Name="Truck" Type="Edm.String" Nullable="false" MaxLength="10"/>
+				<Property Name="UnloadQueueTimeMinutes" Type="Edm.Int32" Nullable="true"/>
+				<Property Name="UnloadTimeMinutes" Type="Edm.Int32" Nullable="true"/>
+				<Property Name="Uuid" Type="Edm.String" Nullable="true" MaxLength="255"/>
+				<NavigationProperty Name="TransportationDetails"
+					Relationship="my.orders.persistance.unit.TransportationAssignment_Transportation_Many_ZeroToOne0" FromRole="TransportationAssignment"
+					ToRole="Transportation"/>
+				<NavigationProperty Name="TruckDetails" Relationship="my.orders.persistance.unit.TransportationAssignment_Truck_Many_ZeroToOne0"
+					FromRole="TransportationAssignment" ToRole="Truck"/>
+			</EntityType>
+			<EntityType Name="TransportationMessageLog">
+				<Key>
+					<PropertyRef Name="Action"/>
+					<PropertyRef Name="MessageCode"/>
+					<PropertyRef Name="Timestamp"/>
+					<PropertyRef Name="Transportation"/>
+				</Key>
+				<Property Name="Action" Type="Edm.String" Nullable="false" MaxLength="30"/>
+				<Property Name="MessageCode" Type="Edm.String" Nullable="false" MaxLength="30"/>
+				<Property Name="MessageText" Type="Edm.String" Nullable="true" MaxLength="2048"/>
+				<Property Name="MessageType" Type="Edm.String" Nullable="true" MaxLength="10"/>
+				<Property Name="Timestamp" Type="Edm.DateTime" Nullable="false"/>
+				<Property Name="Transportation" Type="Edm.String" Nullable="false" MaxLength="10"/>
+				<Property Name="Uuid" Type="Edm.String" Nullable="true" MaxLength="255"/>
+				<NavigationProperty Name="TransportationDetails"
+					Relationship="my.orders.persistance.unit.TransportationMessageLog_Transportation_Many_ZeroToOne0" FromRole="TransportationMessageLog"
+					ToRole="Transportation"/>
+			</EntityType>
+			<EntityType Name="Transportation">
+				<Key>
+					<PropertyRef Name="TransportationNum"/>
+				</Key>
+				<Property Name="ArrivalTimeActualMinutes" Type="Edm.Int32" Nullable="true"/>
+				<Property Name="ArrivalTimeMinutes" Type="Edm.Int32" Nullable="true"/>
+				<Property Name="AssignmentTimeActualMinutes" Type="Edm.Int32" Nullable="true"/>
+				<Property Name="AssignmentTimeMinutes" Type="Edm.Int32" Nullable="true"/>
+				<Property Name="Comment" Type="Edm.String" Nullable="true" MaxLength="50"/>
+				<Property Name="EndActualDateTime" Type="Edm.DateTime" Nullable="true"/>
+				<Property Name="EndDateTime" Type="Edm.DateTime" Nullable="true"/>
+				<Property Name="KickOffDate" Type="Edm.DateTime" Nullable="true"/>
+				<Property Name="LoadQueueTimeActualMinutes" Type="Edm.Int32" Nullable="true"/>
+				<Property Name="LoadQueueTimeMinutes" Type="Edm.Int32" Nullable="true"/>
+				<Property Name="LoadStartActualDateTime" Type="Edm.DateTime" Nullable="true"/>
+				<Property Name="LoadStartDateTime" Type="Edm.DateTime" Nullable="true"/>
+				<Property Name="LoadTimeActualMinutes" Type="Edm.Int32" Nullable="true"/>
+				<Property Name="LoadTimeMinutes" Type="Edm.Int32" Nullable="true"/>
+				<Property Name="ShipFrom" Type="Edm.String" Nullable="true" MaxLength="20"/>
+				<Property Name="ShipTo" Type="Edm.String" Nullable="true" MaxLength="20"/>
+				<Property Name="StartActualDateTime" Type="Edm.DateTime" Nullable="true"/>
+				<Property Name="StartDateTime" Type="Edm.DateTime" Nullable="true"/>
+				<Property Name="Status" Type="Edm.String" Nullable="true" MaxLength="30"/>
+				<Property Name="TransportationNum" Type="Edm.String" Nullable="false" MaxLength="10"/>
+				<Property Name="TravelStartActualDateTime" Type="Edm.DateTime" Nullable="true"/>
+				<Property Name="TravelStartDateTime" Type="Edm.DateTime" Nullable="true"/>
+				<Property Name="TravelTimeActualMinutes" Type="Edm.Int32" Nullable="true"/>
+				<Property Name="TravelTimeMinutes" Type="Edm.Int32" Nullable="true"/>
+				<Property Name="Truck" Type="Edm.String" Nullable="true" MaxLength="10"/>
+				<Property Name="TruckAssignedActualDateTime" Type="Edm.DateTime" Nullable="true"/>
+				<Property Name="TruckAssignedDateTime" Type="Edm.DateTime" Nullable="true"/>
+				<Property Name="UnloadQueueStartActualDateTime" Type="Edm.DateTime" Nullable="true"/>
+				<Property Name="UnloadQueueStartDateTime" Type="Edm.DateTime" Nullable="true"/>
+				<Property Name="UnloadQueueTimeActualMinutes" Type="Edm.Int32" Nullable="true"/>
+				<Property Name="UnloadQueueTimeMinutes" Type="Edm.Int32" Nullable="true"/>
+				<Property Name="UnloadStartActualDateTime" Type="Edm.DateTime" Nullable="true"/>
+				<Property Name="UnloadStartDateTime" Type="Edm.DateTime" Nullable="true"/>
+				<Property Name="UnloadTimeActualMinutes" Type="Edm.Int32" Nullable="true"/>
+				<Property Name="UnloadTimeMinutes" Type="Edm.Int32" Nullable="true"/>
+				<Property Name="Uuid" Type="Edm.String" Nullable="true" MaxLength="255"/>
+				<Property Name="WorkflowInstanceId" Type="Edm.String" Nullable="true" MaxLength="36"/>
+				<NavigationProperty Name="TransportationAssignmentDetails"
+					Relationship="my.orders.persistance.unit.TransportationAssignment_Transportation_Many_ZeroToOne0" FromRole="Transportation"
+					ToRole="TransportationAssignment"/>
+				<NavigationProperty Name="TransportationLocationAssignmentDetails"
+					Relationship="my.orders.persistance.unit.Transportation_TransportationLocationAssignment_One_Many0" FromRole="Transportation"
+					ToRole="TransportationLocationAssignment"/>
+				<NavigationProperty Name="TransportationMessageLogDetails"
+					Relationship="my.orders.persistance.unit.TransportationMessageLog_Transportation_Many_ZeroToOne0" FromRole="Transportation"
+					ToRole="TransportationMessageLog"/>
+				<NavigationProperty Name="ShippingLocationDetails" Relationship="my.orders.persistance.unit.Transportation_ShippingLocation_Many_ZeroToOne0"
+					FromRole="Transportation" ToRole="ShippingLocation"/>
+				<NavigationProperty Name="ShippingLocationDetails1"
+					Relationship="my.orders.persistance.unit.Transportation_ShippingLocation_Many_ZeroToOne1" FromRole="Transportation"
+					ToRole="ShippingLocation"/>
+				<NavigationProperty Name="TruckDetails" Relationship="my.orders.persistance.unit.Transportation_Truck_Many_ZeroToOne0"
+					FromRole="Transportation" ToRole="Truck"/>
+			</EntityType>
+			<EntityType Name="Carrier">
+				<Key>
+					<PropertyRef Name="CarrierKey"/>
+				</Key>
+				<Property Name="CarrierKey" Type="Edm.String" Nullable="false" MaxLength="10"/>
+				<Property Name="Name" Type="Edm.String" Nullable="true" MaxLength="40"/>
+				<Property Name="ReputationIndex" Type="Edm.Int32" Nullable="true"/>
+				<Property Name="Uuid" Type="Edm.String" Nullable="true" MaxLength="255"/>
+				<NavigationProperty Name="CarrierRegionDetails" Relationship="my.orders.persistance.unit.Carrier_CarrierRegion_One_Many0" FromRole="Carrier"
+					ToRole="CarrierRegion"/>
+			</EntityType>
+			<EntityType Name="TransportationLocationAssignment">
+				<Key>
+					<PropertyRef Name="ShipToLocation"/>
+					<PropertyRef Name="Transportation"/>
+				</Key>
+				<Property Name="AssignmentIndex" Type="Edm.Int32" Nullable="true"/>
+				<Property Name="ProcessingTimeMinutes" Type="Edm.Int32" Nullable="true"/>
+				<Property Name="ProcessingTimeScore" Type="Edm.Int32" Nullable="true"/>
+				<Property Name="Selected" Type="Edm.Boolean" Nullable="true"/>
+				<Property Name="ShipToLocation" Type="Edm.String" Nullable="false" MaxLength="10"/>
+				<Property Name="Status" Type="Edm.String" Nullable="true" MaxLength="30"/>
+				<Property Name="Transportation" Type="Edm.String" Nullable="false" MaxLength="10"/>
+				<Property Name="TravelTimeMinutes" Type="Edm.Int32" Nullable="true"/>
+				<Property Name="UnloadQueueTimeMinutes" Type="Edm.Int32" Nullable="true"/>
+				<Property Name="UnloadTimeMinutes" Type="Edm.Int32" Nullable="true"/>
+				<Property Name="Uuid" Type="Edm.String" Nullable="true" MaxLength="255"/>
+				<NavigationProperty Name="ShippingLocationDetails"
+					Relationship="my.orders.persistance.unit.TransportationLocationAssignment_ShippingLocation_Many_ZeroToOne0"
+					FromRole="TransportationLocationAssignment" ToRole="ShippingLocation"/>
+				<NavigationProperty Name="TransportationDetails"
+					Relationship="my.orders.persistance.unit.Transportation_TransportationLocationAssignment_One_Many0"
+					FromRole="TransportationLocationAssignment" ToRole="Transportation"/>
+			</EntityType>
+			<EntityType Name="ShippingLocation">
+				<Key>
+					<PropertyRef Name="ShippingLocationKey"/>
+				</Key>
+				<Property Name="Description" Type="Edm.String" Nullable="true" MaxLength="40"/>
+				<Property Name="GeoLocation" Type="Edm.String" Nullable="true" MaxLength="30"/>
+				<Property Name="LocationType" Type="Edm.String" Nullable="true" MaxLength="30"/>
+				<Property Name="Region" Type="Edm.String" Nullable="true" MaxLength="20"/>
+				<Property Name="ShippingLocationKey" Type="Edm.String" Nullable="false" MaxLength="20"/>
+				<Property Name="Uuid" Type="Edm.String" Nullable="true" MaxLength="255"/>
+				<NavigationProperty Name="TransportationDetails" Relationship="my.orders.persistance.unit.Transportation_ShippingLocation_Many_ZeroToOne0"
+					FromRole="ShippingLocation" ToRole="Transportation"/>
+				<NavigationProperty Name="TransportationDetails1" Relationship="my.orders.persistance.unit.Transportation_ShippingLocation_Many_ZeroToOne1"
+					FromRole="ShippingLocation" ToRole="Transportation"/>
+			</EntityType>
+			<EntityType Name="CarrierRegion">
+				<Key>
+					<PropertyRef Name="Carrier"/>
+					<PropertyRef Name="Region"/>
+				</Key>
+				<Property Name="Carrier" Type="Edm.String" Nullable="false" MaxLength="10"/>
+				<Property Name="Region" Type="Edm.String" Nullable="false" MaxLength="20"/>
+				<Property Name="Uuid" Type="Edm.String" Nullable="true" MaxLength="255"/>
+				<NavigationProperty Name="CarrierDetails" Relationship="my.orders.persistance.unit.Carrier_CarrierRegion_One_Many0" FromRole="CarrierRegion"
+					ToRole="Carrier"/>
+			</EntityType>
+			<EntityType Name="Truck">
+				<Key>
+					<PropertyRef Name="TruckNum"/>
+				</Key>
+				<Property Name="Carrier" Type="Edm.String" Nullable="true" MaxLength="10"/>
+				<Property Name="Description" Type="Edm.String" Nullable="true" MaxLength="40"/>
+				<Property Name="Driver" Type="Edm.String" Nullable="true" MaxLength="20"/>
+				<Property Name="GeoLocation" Type="Edm.String" Nullable="true" MaxLength="30"/>
+				<Property Name="LicensePlateNum" Type="Edm.String" Nullable="true" MaxLength="20"/>
+				<Property Name="MaxVolume" Type="Edm.Decimal" Nullable="true" Precision="13" Scale="2"/>
+				<Property Name="MaxWeight" Type="Edm.Decimal" Nullable="true" Precision="13" Scale="2"/>
+				<Property Name="Status" Type="Edm.String" Nullable="true" MaxLength="20"/>
+				<Property Name="TruckNum" Type="Edm.String" Nullable="false" MaxLength="10"/>
+				<Property Name="Uuid" Type="Edm.String" Nullable="true" MaxLength="255"/>
+				<Property Name="VolumeUom" Type="Edm.String" Nullable="true" MaxLength="3"/>
+				<Property Name="WeightUom" Type="Edm.String" Nullable="true" MaxLength="3"/>
+				<NavigationProperty Name="CarrierDetails" Relationship="my.orders.persistance.unit.Truck_Carrier_Many_ZeroToOne0" FromRole="Truck"
+					ToRole="Carrier"/>
+				<NavigationProperty Name="TransportationDetails" Relationship="my.orders.persistance.unit.Transportation_Truck_Many_ZeroToOne0"
+					FromRole="Truck" ToRole="Transportation"/>
+			</EntityType>
+			<Association Name="TransportationAssignment_Transportation_Many_ZeroToOne0">
+				<End Type="my.orders.persistance.unit.TransportationAssignment" Multiplicity="*" Role="TransportationAssignment"/>
+				<End Type="my.orders.persistance.unit.Transportation" Multiplicity="0..1" Role="Transportation"/>
+				<ReferentialConstraint>
+					<Principal Role="Transportation">
+						<PropertyRef Name="TransportationNum"/>
+					</Principal>
+					<Dependent Role="TransportationAssignment">
+						<PropertyRef Name="Transportation"/>
+					</Dependent>
+				</ReferentialConstraint>
+			</Association>
+			<Association Name="TransportationAssignment_Truck_Many_ZeroToOne0">
+				<End Type="my.orders.persistance.unit.TransportationAssignment" Multiplicity="*" Role="TransportationAssignment"/>
+				<End Type="my.orders.persistance.unit.Truck" Multiplicity="0..1" Role="Truck"/>
+				<ReferentialConstraint>
+					<Principal Role="Truck">
+						<PropertyRef Name="TruckNum"/>
+					</Principal>
+					<Dependent Role="TransportationAssignment">
+						<PropertyRef Name="Truck"/>
+					</Dependent>
+				</ReferentialConstraint>
+			</Association>
+			<Association Name="TransportationMessageLog_Transportation_Many_ZeroToOne0">
+				<End Type="my.orders.persistance.unit.TransportationMessageLog" Multiplicity="*" Role="TransportationMessageLog"/>
+				<End Type="my.orders.persistance.unit.Transportation" Multiplicity="0..1" Role="Transportation"/>
+				<ReferentialConstraint>
+					<Principal Role="Transportation">
+						<PropertyRef Name="TransportationNum"/>
+					</Principal>
+					<Dependent Role="TransportationMessageLog">
+						<PropertyRef Name="Transportation"/>
+					</Dependent>
+				</ReferentialConstraint>
+			</Association>
+			<Association Name="Transportation_ShippingLocation_Many_ZeroToOne0">
+				<End Type="my.orders.persistance.unit.Transportation" Multiplicity="*" Role="Transportation"/>
+				<End Type="my.orders.persistance.unit.ShippingLocation" Multiplicity="0..1" Role="ShippingLocation"/>
+				<ReferentialConstraint>
+					<Principal Role="ShippingLocation">
+						<PropertyRef Name="ShippingLocationKey"/>
+					</Principal>
+					<Dependent Role="Transportation">
+						<PropertyRef Name="ShipFrom"/>
+					</Dependent>
+				</ReferentialConstraint>
+			</Association>
+			<Association Name="Transportation_ShippingLocation_Many_ZeroToOne1">
+				<End Type="my.orders.persistance.unit.Transportation" Multiplicity="*" Role="Transportation"/>
+				<End Type="my.orders.persistance.unit.ShippingLocation" Multiplicity="0..1" Role="ShippingLocation"/>
+				<ReferentialConstraint>
+					<Principal Role="ShippingLocation">
+						<PropertyRef Name="ShippingLocationKey"/>
+					</Principal>
+					<Dependent Role="Transportation">
+						<PropertyRef Name="ShipTo"/>
+					</Dependent>
+				</ReferentialConstraint>
+			</Association>
+			<Association Name="Transportation_Truck_Many_ZeroToOne0">
+				<End Type="my.orders.persistance.unit.Transportation" Multiplicity="*" Role="Transportation"/>
+				<End Type="my.orders.persistance.unit.Truck" Multiplicity="0..1" Role="Truck"/>
+				<ReferentialConstraint>
+					<Principal Role="Truck">
+						<PropertyRef Name="TruckNum"/>
+					</Principal>
+					<Dependent Role="Transportation">
+						<PropertyRef Name="Truck"/>
+					</Dependent>
+				</ReferentialConstraint>
+			</Association>
+			<Association Name="TransportationLocationAssignment_ShippingLocation_Many_ZeroToOne0">
+				<End Type="my.orders.persistance.unit.TransportationLocationAssignment" Multiplicity="*" Role="TransportationLocationAssignment"/>
+				<End Type="my.orders.persistance.unit.ShippingLocation" Multiplicity="0..1" Role="ShippingLocation"/>
+				<ReferentialConstraint>
+					<Principal Role="ShippingLocation">
+						<PropertyRef Name="ShippingLocationKey"/>
+					</Principal>
+					<Dependent Role="TransportationLocationAssignment">
+						<PropertyRef Name="ShipToLocation"/>
+					</Dependent>
+				</ReferentialConstraint>
+			</Association>
+			<Association Name="Transportation_TransportationLocationAssignment_One_Many0">
+				<End Type="my.orders.persistance.unit.Transportation" Multiplicity="0..1" Role="Transportation"/>
+				<End Type="my.orders.persistance.unit.TransportationLocationAssignment" Multiplicity="*" Role="TransportationLocationAssignment"/>
+				<ReferentialConstraint>
+					<Principal Role="Transportation">
+						<PropertyRef Name="TransportationNum"/>
+					</Principal>
+					<Dependent Role="TransportationLocationAssignment">
+						<PropertyRef Name="Transportation"/>
+					</Dependent>
+				</ReferentialConstraint>
+			</Association>
+			<Association Name="Carrier_CarrierRegion_One_Many0">
+				<End Type="my.orders.persistance.unit.Carrier" Multiplicity="0..1" Role="Carrier"/>
+				<End Type="my.orders.persistance.unit.CarrierRegion" Multiplicity="*" Role="CarrierRegion"/>
+				<ReferentialConstraint>
+					<Principal Role="Carrier">
+						<PropertyRef Name="CarrierKey"/>
+					</Principal>
+					<Dependent Role="CarrierRegion">
+						<PropertyRef Name="Carrier"/>
+					</Dependent>
+				</ReferentialConstraint>
+			</Association>
+			<Association Name="Truck_Carrier_Many_ZeroToOne0">
+				<End Type="my.orders.persistance.unit.Truck" Multiplicity="*" Role="Truck"/>
+				<End Type="my.orders.persistance.unit.Carrier" Multiplicity="0..1" Role="Carrier"/>
+				<ReferentialConstraint>
+					<Principal Role="Carrier">
+						<PropertyRef Name="CarrierKey"/>
+					</Principal>
+					<Dependent Role="Truck">
+						<PropertyRef Name="Carrier"/>
+					</Dependent>
+				</ReferentialConstraint>
+			</Association>
+			<EntityContainer Name="my_orders_persistance_unitContainer" m:IsDefaultEntityContainer="true">
+				<EntitySet Name="NumberRanges" EntityType="my.orders.persistance.unit.NumberRange"/>
+				<EntitySet Name="MediaResources" EntityType="my.orders.persistance.unit.MediaResource"/>
+				<EntitySet Name="TransportationAssignments" EntityType="my.orders.persistance.unit.TransportationAssignment"/>
+				<EntitySet Name="TransportationMessageLogs" EntityType="my.orders.persistance.unit.TransportationMessageLog"/>
+				<EntitySet Name="Transportations" EntityType="my.orders.persistance.unit.Transportation"/>
+				<EntitySet Name="Carriers" EntityType="my.orders.persistance.unit.Carrier"/>
+				<EntitySet Name="TransportationLocationAssignments" EntityType="my.orders.persistance.unit.TransportationLocationAssignment"/>
+				<EntitySet Name="ShippingLocations" EntityType="my.orders.persistance.unit.ShippingLocation"/>
+				<EntitySet Name="CarrierRegions" EntityType="my.orders.persistance.unit.CarrierRegion"/>
+				<EntitySet Name="Trucks" EntityType="my.orders.persistance.unit.Truck"/>
+				<AssociationSet Name="TransportationAssignment_Transportation_Many_ZeroToOne0Set"
+					Association="my.orders.persistance.unit.TransportationAssignment_Transportation_Many_ZeroToOne0">
+					<End EntitySet="TransportationAssignments" Role="TransportationAssignment"/>
+					<End EntitySet="Transportations" Role="Transportation"/>
+				</AssociationSet>
+				<AssociationSet Name="TransportationAssignment_Truck_Many_ZeroToOne0Set"
+					Association="my.orders.persistance.unit.TransportationAssignment_Truck_Many_ZeroToOne0">
+					<End EntitySet="TransportationAssignments" Role="TransportationAssignment"/>
+					<End EntitySet="Trucks" Role="Truck"/>
+				</AssociationSet>
+				<AssociationSet Name="TransportationMessageLog_Transportation_Many_ZeroToOne0Set"
+					Association="my.orders.persistance.unit.TransportationMessageLog_Transportation_Many_ZeroToOne0">
+					<End EntitySet="TransportationMessageLogs" Role="TransportationMessageLog"/>
+					<End EntitySet="Transportations" Role="Transportation"/>
+				</AssociationSet>
+				<AssociationSet Name="Transportation_ShippingLocation_Many_ZeroToOne0Set"
+					Association="my.orders.persistance.unit.Transportation_ShippingLocation_Many_ZeroToOne0">
+					<End EntitySet="Transportations" Role="Transportation"/>
+					<End EntitySet="ShippingLocations" Role="ShippingLocation"/>
+				</AssociationSet>
+				<AssociationSet Name="Transportation_ShippingLocation_Many_ZeroToOne1Set"
+					Association="my.orders.persistance.unit.Transportation_ShippingLocation_Many_ZeroToOne1">
+					<End EntitySet="Transportations" Role="Transportation"/>
+					<End EntitySet="ShippingLocations" Role="ShippingLocation"/>
+				</AssociationSet>
+				<AssociationSet Name="Transportation_Truck_Many_ZeroToOne0Set" Association="my.orders.persistance.unit.Transportation_Truck_Many_ZeroToOne0">
+					<End EntitySet="Transportations" Role="Transportation"/>
+					<End EntitySet="Trucks" Role="Truck"/>
+				</AssociationSet>
+				<AssociationSet Name="TransportationLocationAssignment_ShippingLocation_Many_ZeroToOne0Set"
+					Association="my.orders.persistance.unit.TransportationLocationAssignment_ShippingLocation_Many_ZeroToOne0">
+					<End EntitySet="TransportationLocationAssignments" Role="TransportationLocationAssignment"/>
+					<End EntitySet="ShippingLocations" Role="ShippingLocation"/>
+				</AssociationSet>
+				<AssociationSet Name="Transportation_TransportationLocationAssignment_One_Many0Set"
+					Association="my.orders.persistance.unit.Transportation_TransportationLocationAssignment_One_Many0">
+					<End EntitySet="Transportations" Role="Transportation"/>
+					<End EntitySet="TransportationLocationAssignments" Role="TransportationLocationAssignment"/>
+				</AssociationSet>
+				<AssociationSet Name="Carrier_CarrierRegion_One_Many0Set" Association="my.orders.persistance.unit.Carrier_CarrierRegion_One_Many0">
+					<End EntitySet="Carriers" Role="Carrier"/>
+					<End EntitySet="CarrierRegions" Role="CarrierRegion"/>
+				</AssociationSet>
+				<AssociationSet Name="Truck_Carrier_Many_ZeroToOne0Set" Association="my.orders.persistance.unit.Truck_Carrier_Many_ZeroToOne0">
+					<End EntitySet="Trucks" Role="Truck"/>
+					<End EntitySet="Carriers" Role="Carrier"/>
+				</AssociationSet>
+				<FunctionImport Name="SetWorkflowInstanceId" ReturnType="my.orders.persistance.unit.Transportation" EntitySet="Transportations"
+					m:HttpMethod="POST">
+					<Parameter Name="TransportationNum" Type="Edm.String" Nullable="true"/>
+					<Parameter Name="WorkflowInstanceId" Type="Edm.String" Nullable="true"/>
+				</FunctionImport>
+				<FunctionImport Name="ProcessStatusChange" ReturnType="my.orders.persistance.unit.Transportation" EntitySet="Transportations"
+					m:HttpMethod="POST">
+					<Parameter Name="TransportationNum" Type="Edm.String" Nullable="true"/>
+					<Parameter Name="NewStatus" Type="Edm.String" Nullable="true"/>
+				</FunctionImport>
+				<FunctionImport Name="ProcessShipToDetermination" ReturnType="my.orders.persistance.unit.ShippingLocation" EntitySet="ShippingLocations"
+					m:HttpMethod="POST">
+					<Parameter Name="TransportationNum" Type="Edm.String" Nullable="true"/>
+				</FunctionImport>
+				<FunctionImport Name="ProcessTrucksSearch" ReturnType="my.orders.persistance.unit.Transportation" EntitySet="Transportations"
+					m:HttpMethod="POST">
+					<Parameter Name="TransportationNum" Type="Edm.String" Nullable="true"/>
+				</FunctionImport>
+				<FunctionImport Name="ReleaseTransportation" ReturnType="Edm.String" m:HttpMethod="POST">
+					<Parameter Name="TransportationNum" Type="Edm.String" Nullable="true"/>
+				</FunctionImport>
+				<FunctionImport Name="CancelTransportation" ReturnType="Edm.String" m:HttpMethod="POST">
+					<Parameter Name="TransportationNum" Type="Edm.String" Nullable="true"/>
+				</FunctionImport>
+				<FunctionImport Name="SendRequests" ReturnType="Edm.String" m:HttpMethod="POST">
+					<Parameter Name="TransportationNum" Type="Edm.String" Nullable="true"/>
+				</FunctionImport>
+				<FunctionImport Name="AcceptTransportation" ReturnType="Edm.String" m:HttpMethod="POST">
+					<Parameter Name="TransportationNum" Type="Edm.String" Nullable="true"/>
+					<Parameter Name="TruckNum" Type="Edm.String" Nullable="true"/>
+				</FunctionImport>
+				<FunctionImport Name="AcceptTransportationByDriver" ReturnType="Edm.String" m:HttpMethod="POST">
+					<Parameter Name="TransportationNum" Type="Edm.String" Nullable="true"/>
+					<Parameter Name="Driver" Type="Edm.String" Nullable="true"/>
+				</FunctionImport>
+			</EntityContainer>
+		</Schema>
+	</edmx:DataServices>
+</edmx:Edmx>

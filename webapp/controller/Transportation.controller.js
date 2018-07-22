@@ -16,9 +16,32 @@ sap.ui.define([
 			this._oGlobalOdataModel = this.getOwnerComponent().getModel();
 			this._oODataModel = this.getOwnerComponent().getModel();
 			this._oYandexMap = new YandexMap(this.byId("map").getId());
+
 			this._oCalendarModel = new JSONModel();
 			this._oPlanningCalendarService = new PlanningCalendarService();
 			this.getView().setModel(this._oCalendarModel, "Calendar");
+
+			this._oChatModel = new JSONModel();
+			this.getView().setModel(this._oChatModel, "Chat");
+			this._oChatModel.setData({
+				Messages: [{
+					MessageDateTime: new Date(),
+					MessageTitle: "titel",
+					MessageText: "text",
+					UserName: "userName"
+				}, {
+					MessageDateTime: new Date(),
+					MessageTitle: "titel",
+					MessageText: "text",
+					UserName: "userName"
+				}, {
+					MessageDateTime: new Date(),
+					MessageTitle: "titel",
+					MessageText: "text",
+					UserName: "userName"
+				}]
+
+			});
 
 			this.getOwnerComponent().getRouter().getRoute("Transportation").attachPatternMatched(this.onRouterObjectMatched, this);
 
@@ -29,6 +52,38 @@ sap.ui.define([
 				this._oYandexMapApiInitialized.resolve(oYmaps)
 			});
 
+			//https://docs.pusher.com/chatkit/quick_start/javascript
+			const tokenProvider = new Chatkit.TokenProvider({
+				url: "https://us1.pusherplatform.io/services/chatkit_token_provider/v1/581182a8-e5bc-46db-95f9-0fa82fa3974d/token"
+			});
+			const chatManager = new Chatkit.ChatManager({
+				instanceLocator: "v1:us1:581182a8-e5bc-46db-95f9-0fa82fa3974d",
+				userId: "dispatcher",
+				tokenProvider: tokenProvider
+			});
+
+			chatManager
+				.connect()
+				.then(currentUser => {
+					currentUser.subscribeToRoom({
+						roomId: currentUser.rooms[0].id,
+						hooks: {
+							onNewMessage: message => {
+								let aMessages = this._oChatModel.getObject("/Messages");
+								aMessages.push({
+									MessageDateTime: new Date(),
+									MessageTitle: "titel",
+									MessageText: message.text,
+									UserName: message.senderId
+								});
+								this._oChatModel.setProperty("/Messages", aMessages);
+							}
+						}
+					});
+				})
+				.catch(error => {
+					alert("error:", error);
+				});
 		},
 		onTest: function() {},
 		onTransporationRelease: function() {

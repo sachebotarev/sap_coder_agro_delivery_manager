@@ -1,6 +1,7 @@
 <mvc:View controllerName="my.sap_coder_agro_delivery_manager.controller.Transportation" xmlns:html="http://www.w3.org/1999/xhtml"
 	xmlns="sap.m" xmlns:mvc="sap.ui.core.mvc" xmlns:semantic="sap.m.semantic" xmlns:footerbar="sap.ushell.ui.footerbar"
-	xmlns:form="sap.ui.layout.form" xmlns:core="sap.ui.core" xmlns:unified="sap.ui.unified" xmlns:tbl="sap.ui.table">
+	xmlns:form="sap.ui.layout.form" xmlns:core="sap.ui.core" xmlns:unified="sap.ui.unified" xmlns:tbl="sap.ui.table"
+	xmlns:comm="sap.suite.ui.commons">
 	<semantic:MasterPage title="Transportation Details" showNavButton="true" navButtonPress="onNavBack">
 		<semantic:content>
 			<PullToRefresh id="pullToRefresh" visible="{device>/support/touch}" refresh="onRefresh"/>
@@ -16,7 +17,7 @@
 			</ObjectHeader>
 			<IconTabBar id="iconTabBar" class="sapUiResponsiveContentPadding">
 				<items>
-					<IconTabFilter icon="sap-icon://hint" tooltip="{Visit Details}">
+					<IconTabFilter icon="sap-icon://map-3" tooltip="Map">
 						<!--<Toolbar>
 							<Button text="Refresh" press="onTest"/>
 							<Button text="Prepare Step 1" press="onTest"/>
@@ -178,7 +179,7 @@
 							</items>
 						</IconTabBar>
 					</IconTabFilter>
-					<IconTabFilter icon="sap-icon://fridge" tooltip="Equipment">
+					<IconTabFilter icon="sap-icon://hint" tooltip="Details">
 						<form:Form>
 							<form:layout>
 								<form:ResponsiveGridLayout/>
@@ -214,7 +215,7 @@
 							</form:formContainers>
 						</form:Form>
 					</IconTabFilter>
-					<IconTabFilter icon="sap-icon://sales-order" tooltip="Sales Orders">
+					<IconTabFilter icon="sap-icon://gantt-bars" tooltip="Timeline">
 						<PlanningCalendar startDate="{path: 'Calendar>/startDate'}" rows="{path: 'Calendar>/rows'}" appointmentsVisualization="Filled"
 							appointmentSelect="handleAppointmentSelect" showEmptyIntervalHeaders="false" showWeekNumbers="true" viewKey="H">
 							<views>
@@ -404,6 +405,29 @@
 								</form:FormContainer>
 							</form:formContainers>
 						</form:Form>
+					</IconTabFilter>
+					<IconTabFilter icon="sap-icon://email" tooltip="Messages">
+						<comm:Timeline
+							id="idTimeline"
+							enableDoubleSided="true"
+							groupBy="MessageDateTime"
+							growingThreshold="0"
+							filterTitle="Job Title"
+							sortOldestFirst="true"
+							content="{Chat>/Messages}">
+							<comm:content>
+								<comm:TimelineItem
+										id="idTemplateItem"
+										dateTime="{Chat>MessageDateTime}"
+										title="{Chat>MessageTitle}"
+										userNameClickable="true"
+										text="{Chat>MessageText}"
+										userName="{Chat>UserName}"
+										filterValue="JobTitle"
+										icon="sap-icon://person-placeholder">
+								</comm:TimelineItem>
+							</comm:content>
+						</comm:Timeline>
 					</IconTabFilter>
 				</items>
 			</IconTabBar>
