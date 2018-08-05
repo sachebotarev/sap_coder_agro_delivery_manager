@@ -211,6 +211,11 @@
 											<Text text="{TruckDetails/Carrier} ({TruckDetails/CarrierDetails/Name})"/>
 										</form:fields>
 									</form:FormElement>
+									<form:FormElement label="Way Bill">
+										<form:fields>
+											<Input value="{WayBillPdfMediaResource}"/>
+										</form:fields>
+									</form:FormElement>
 								</form:FormContainer>
 							</form:formContainers>
 						</form:Form>
