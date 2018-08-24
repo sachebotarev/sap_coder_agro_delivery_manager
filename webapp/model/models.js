@@ -1,6 +1,6 @@
 sap.ui.define([
 	"sap/ui/model/json/JSONModel",
-	"my/sapui5_components_library/sap/ui5/ODataModelExt",
+	"com/pepsico/core/sap/ui/model/odata/v2/ODataModel",
 	"sap/ui/Device"
 ], function(JSONModel, ODataModelExt, Device) {
 	"use strict";
@@ -20,7 +20,7 @@ sap.ui.define([
 				return new ODataModelExt(
 					"/odata", {
 						json: true,
-						useBatch: false,
+						useBatch: true,
 						defaultBindingMode: sap.ui.model.BindingMode.TwoWay,
 						defaultUpdateMethod: sap.ui.model.odata.UpdateMethod.Put,
 						loadMetadataAsync: true,

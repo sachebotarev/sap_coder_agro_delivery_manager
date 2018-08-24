@@ -1,77 +1,170 @@
 <mvc:View controllerName="my.sap_coder_agro_delivery_manager.controller.Truck" xmlns:html="http://www.w3.org/1999/xhtml" xmlns="sap.m"
 	xmlns:mvc="sap.ui.core.mvc" xmlns:semantic="sap.m.semantic" xmlns:footerbar="sap.ushell.ui.footerbar" xmlns:form="sap.ui.layout.form"
-	xmlns:core="sap.ui.core" xmlns:unif="sap.ui.unified" xmlns:tbl="sap.ui.table" xmlns:unified="sap.ui.unified">
+	xmlns:core="sap.ui.core" xmlns:unif="sap.ui.unified" xmlns:tbl="sap.ui.table" xmlns:unified="sap.ui.unified" xmlns:c="sap.ui.core">
 	<semantic:MasterPage title="Truck Details" showNavButton="true" navButtonPress="onNavBack">
 		<semantic:content>
 			<PullToRefresh id="pullToRefresh" visible="{device>/support/touch}" refresh="onRefresh"/>
-			<ObjectHeader id="objectHeader" title="Truck # {TruckNum}" icon="sap-icon://visits">
+			<ObjectHeader id="objectHeader" title="Водитель # {/Truck/DriverName} / {/Truck/Description}" icon="sap-icon://employee">
 				<attributes>
-					<ObjectAttribute title="Truck:" text="{TruckNum} ({Description} - {LicensePlateNum})"/>
-					<ObjectAttribute title="Carrier:" text="{Carrier} ({CarrierDetails/Name})"/>
+					<ObjectAttribute title="Перевозчик" text="({/Truck/CarrierDetails/Name})"/>
 				</attributes>
 				<statuses>
-					<ObjectStatus text="{Status}" state="{path:'Status', formatter:'.formatter.transportationStatusState'}"
-						icon="{path:'Status', formatter:'.formatter.transportationStatusIcon'}"/>
+					<ObjectStatus text="{path: '/Truck/Status', formatter:'.formatter.truckStatusText'}"
+											state="{path:'/Truck/Status', formatter:'.formatter.truckStatusState'}" icon="{path:'/Truck/Status', formatter:'.formatter.truckStatusIcon'}"/>
 				</statuses>
 			</ObjectHeader>
 			<IconTabBar id="iconTabBar" class="sapUiResponsiveContentPadding">
 				<items>
-					<IconTabFilter icon="sap-icon://hint" tooltip="{Visit Details}">
-						<tbl:Table selectionMode="MultiToggle" rows="{TransportationDetails}" visibleRowCount="10" enableCellFilter="true" rowActionCount="1"
-							rowSelectionChange="onTransportationAssignmentTableRawSelected">
+					<IconTabFilter icon="sap-icon://hint" text="Детали">
+						<form:Form>
+							<form:layout>
+								<form:ResponsiveGridLayout/>
+							</form:layout>
+							<form:formContainers>
+								<form:FormContainer>
+									<form:FormElement label="Водитель">
+										<form:fields>
+											<Text text="{/Truck/DriverName}"/>
+										</form:fields>
+									</form:FormElement>
+									<form:FormElement label="Грузовик">
+										<form:fields>
+											<Text text="{/Truck/Description} ({/Truck/LicensePlateNum})"/>
+										</form:fields>
+									</form:FormElement>
+									<form:FormElement label="Грузоподъемность и Объем">
+										<form:fields>
+											<Text text="{/Truck/MaxWeight} т / {/Truck/MaxVolume} м3"/>
+										</form:fields>
+									</form:FormElement>
+									<form:FormElement label="Перевозчик">
+										<form:fields>
+											<Text text="{/Truck/CarrierDetails/Name}"/>
+										</form:fields>
+									</form:FormElement>
+									<form:FormElement label="Репутация">
+										<HBox>
+											<Text text="{/Truck/CarrierDetails/ReputationIndex} из 5" class="sapUiTinyMarginEnd"/>
+											<Image src="images/index_1.png" width="20px" height="20px" visible="{= (${/Truck/CarrierDetails/ReputationIndex} === 1)}"/>
+											<Image src="images/index_2.png" width="20px" height="20px" visible="{= (${/Truck/CarrierDetails/ReputationIndex} === 2)}"/>
+											<Image src="images/index_3.png" width="20px" height="20px" visible="{= (${/Truck/CarrierDetails/ReputationIndex} === 3)}"/>
+											<Image src="images/index_4.png" width="20px" height="20px" visible="{= (${/Truck/CarrierDetails/ReputationIndex} === 4)}"/>
+											<Image src="images/index_5.png" width="20px" height="20px" visible="{= (${/Truck/CarrierDetails/ReputationIndex} === 5)}"/>
+										</HBox>
+									</form:FormElement>
+								</form:FormContainer>
+							</form:formContainers>
+						</form:Form>
+					</IconTabFilter>
+					<IconTabFilter icon="sap-icon://shipping-status" text="Заказы">
+						<tbl:Table rows="{/Truck/TransportationDetails/results}" visibleRowCount="9" rowActionCount="1">
 							<tbl:columns>
-								<tbl:Column>
-									<Label text="TransportationNum"/>
+								<tbl:Column width="4rem" filterProperty="TransportationNum" defaultFilterOperator="StartsWith" sortProperty="TransportationNum">
+									<Label text="Заказ"/>
 									<tbl:template>
-										<CheckBox selected="{TransportationNum}" wrapping="false"/>
+										<Text text="{TransportationNum}"/>
 									</tbl:template>
 								</tbl:Column>
-								<tbl:Column>
-									<Label text="ShipFrom"/>
+								<tbl:Column width="10rem" filterProperty="Status" defaultFilterOperator="StartsWith" sortProperty="Status">
+									<Label text="Статус"/>
 									<tbl:template>
-										<Label text="{ShipFrom}"/>
+										<ObjectStatus text="{path: 'Status', formatter:'.formatter.transportationStatusText'}"
+											state="{path:'Status', formatter:'.formatter.transportationStatusState'}"
+											icon="{path:'Status', formatter:'.formatter.transportationStatusIcon'}"/>
+									</tbl:template>
+								</tbl:Column>
+								<tbl:Column width="4rem" filterProperty="Region" defaultFilterOperator="StartsWith" sortProperty="Region">
+									<Label text="Регион"/>
+									<tbl:template>
+										<Text text="{ShippingLocationDetails/Region}"/>
+									</tbl:template>
+								</tbl:Column>
+								<tbl:Column width="9rem" filterProperty="ShippingLocationDetails/Description" defaultFilterOperator="StartsWith"
+									sortProperty="ShippingLocationDetails/Description">
+									<Label text="Отправитель"/>
+									<tbl:template>
+										<Text text="{ShippingLocationDetails/Description} ({ShippingLocationDetails/ShippingLocationKey})"/>
+									</tbl:template>
+								</tbl:Column>
+								<tbl:Column width="9rem" filterProperty="ShippingLocationDetails1/Description" defaultFilterOperator="StartsWith"
+									sortProperty="ShippingLocationDetails1/Description">
+									<Label text="Получатель"/>
+									<tbl:template>
+										<Text text="{ShippingLocationDetails1/Description} ({ShippingLocationDetails1/ShippingLocationKey})"/>
+									</tbl:template>
+								</tbl:Column>
+								<tbl:Column width="8rem">
+									<Label text="Груз"/>
+									<tbl:template>
+										<Text text="{TotalWeight} т / {TotalVolume} м3"/>
+									</tbl:template>
+								</tbl:Column>
+								<tbl:Column width="8rem" filterProperty="TruckDetails/DriverName" defaultFilterOperator="StartsWith" sortProperty="TruckDetails/DriverName">
+									<Label text="Грузовик и Водитель"/>
+									<tbl:template>
+										<Text text="{TruckDetails/Description} / {TruckDetails/DriverName}"/>
+									</tbl:template>
+								</tbl:Column>
+								<tbl:Column width="8rem" filterProperty="TruckDetails/CarrierDetails/Name" defaultFilterOperator="StartsWith"
+									sortProperty="TruckDetails/CarrierDetails/Name">
+									<Label text="Перевозчик"/>
+									<tbl:template>
+										<Text text="{TruckDetails/CarrierDetails/Name}"/>
+									</tbl:template>
+								</tbl:Column>
+								<tbl:Column width="10rem">
+									<Label text="Оценка"/>
+									<tbl:template>
+										<RatingIndicator maxValue="5" class="sapUiTinyMargin" value="{RatingMark}" editable="false"/>
 									</tbl:template>
 								</tbl:Column>
 							</tbl:columns>
 							<tbl:rowActionTemplate>
 								<tbl:RowAction>
 									<tbl:items>
-										<tbl:RowActionItem type="Delete" press="onLineDelete"/>
+										<tbl:RowActionItem type="Navigation" press="onTransportationDetailsNav"/>
 									</tbl:items>
 								</tbl:RowAction>
 							</tbl:rowActionTemplate>
 						</tbl:Table>
 					</IconTabFilter>
-					<IconTabFilter icon="sap-icon://fridge" tooltip="Equipment">
-						<PlanningCalendar id="PC1" startDate="{path: 'Calendar>/startDate'}" rows="{path: 'Calendar>/people'}" appointmentsVisualization="Filled"
-							appointmentSelect="handleAppointmentSelect" showEmptyIntervalHeaders="false" showWeekNumbers="true">
-							<toolbarContent>
-								<Title text="Title" titleStyle="H4"/>
-							</toolbarContent>
+					<IconTabFilter icon="sap-icon://map-3" text="Карта">
+						<html:div id="yandexMapShippingLocationId" style="width: 100%; height: 400px; padding: 0; margin: 0;"></html:div>
+					</IconTabFilter>
+					<IconTabFilter icon="sap-icon://gantt-bars" text="График">
+						<PlanningCalendar startDate="{path: '/Timeline/startDate'}" rows="{path: '/Timeline/rows'}" appointmentsVisualization="Filled"
+							appointmentSelect="handleAppointmentSelect" showEmptyIntervalHeaders="false" showWeekNumbers="true" viewKey="H">
+							<!--<toolbarContent>
+								<CheckBox selected="{/AutoRefresh}" text="Автоматически Обновлять" press="onRefresh"/>
+							</toolbarContent>-->
+							<views>
+								<PlanningCalendarView key="H" intervalType="Hour" description="Часы" intervalsS="2" intervalsM="2" intervalsL="2" showSubIntervals="true"></PlanningCalendarView>
+								<PlanningCalendarView key="D" intervalType="Day" description="Дни" intervalsS="2" intervalsM="2" intervalsL="2" showSubIntervals="true"></PlanningCalendarView>
+							</views>
 							<rows>
-								<PlanningCalendarRow icon="{Calendar>pic}" title="{Calendar>name}" text="{Calendar>role}"
-									appointments="{path : 'Calendar>appointments', templateShareable: 'true'}" intervalHeaders="{path: 'Calendar>headers', templateShareable: 'true'}">
+								<PlanningCalendarRow icon="{pic}" title="{name}" text="{role}" appointments="{path : 'appointments', templateShareable: 'true'}"
+									intervalHeaders="{path: 'headers', templateShareable: 'true'}">
 									<customData>
-										<core:CustomData key="emp-name" value="{Calendar>name}" writeToDom="true"/>
+										<core:CustomData key="emp-name" value="{name}" writeToDom="true"/>
 									</customData>
 									<appointments>
-										<unified:CalendarAppointment startDate="{Calendar>start}" endDate="{Calendar>end}" icon="{Calendar>pic}" title="{Calendar>title}" text="{Calendar>info}" type="{Calendar>type}"
-											tentative="{Calendar>tentative}"></unified:CalendarAppointment>
+										<unified:CalendarAppointment startDate="{start}" endDate="{end}" icon="{pic}" title="{title}" text="{Calendar>info}" type="{type}"
+											tentative="{tentative}"></unified:CalendarAppointment>
 									</appointments>
 									<intervalHeaders>
-										<unified:CalendarAppointment startDate="{Calendar>start}" endDate="{Calendar>end}" icon="{Calendar>pic}" title="{Calendar>title}" type="{Calendar>type}"></unified:CalendarAppointment>
+										<unified:CalendarAppointment startDate="{start}" endDate="{end}" icon="{pic}" title="{title}" type="{type}"></unified:CalendarAppointment>
 									</intervalHeaders>
 								</PlanningCalendarRow>
 							</rows>
 						</PlanningCalendar>
 					</IconTabFilter>
-					<IconTabFilter icon="sap-icon://sales-order" tooltip="Sales Orders"></IconTabFilter>
+					<IconTabFilter icon="sap-icon://email" text="Чат">
+					</IconTabFilter>
 				</items>
 			</IconTabBar>
 		</semantic:content>
 		<semantic:customFooterContent>
-			<Button icon="sap-icon://decline" text="Cancel" press="onTransporationCancel"/>
-			<Button icon="sap-icon://accept" text="Release" press="onTransporationRelease"/>
+			<CheckBox selected="{/AutoRefresh}" text="Автоматически обновлять"/>
 		</semantic:customFooterContent>
 	</semantic:MasterPage>
 </mvc:View>

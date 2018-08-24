@@ -56,11 +56,10 @@
     font-size: 10px;
     top: 4px;
     left: 4px;
-    color: #930a0a;
 }
 .map_placemark_top_left {
     position: absolute;
-    font-size: 10px;
+    font-size: 11px;
     top: 0px;
     left: 0px;
     color: #930a0a;
@@ -74,7 +73,7 @@
 }
 .map_placemark_top_right {
     position: absolute;
-    font-size: 10px;
+    font-size: 11px;
     top: -4px;
     right: -3px;
     color: #930a0a;

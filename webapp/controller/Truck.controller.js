@@ -1,10 +1,18 @@
 sap.ui.define([
 	"sap/ui/core/mvc/Controller",
+	"com/pepsico/core/sap/ui/model/odata/v2/ODataModel",
+	"com/pepsico/core/cordova/camera/CameraFunctions",
+	"com/pepsico/core/cordova/file/FileSystemFunctions",
+	"com/pepsico/core/web/file/FileReader/FileReaderFunctions",
 	"sap/ui/model/json/JSONModel",
-	"my/sap_coder_agro_delivery_manager/model/formatter",
 	"my/sapui5_components_library/yandex/maps/YandexMap",
-	"my/sap_coder_agro_delivery_manager/model/PlanningCalendarService"
-], function (Controller, JSONModel, formatter, YandexMap, PlanningCalendarService) {
+	"my/sap_coder_agro_delivery_manager/view/TransportationMapViewBuilder",
+	"my/sap_coder_agro_delivery_manager/model/formatter",
+	"my/sap_coder_agro_delivery_manager/model/PlanningCalendarFunctions",
+	"my/sapui5_components_library/yandex/maps/MapPlacemark",
+	"my/sapui5_components_library/yandex/maps/PlacemarkDetail",
+], function (Controller, ODataModel, CameraFunctions, FileSystemFunctions, FileReaderFunctions, JSONModel, YandexMap,
+	TransportationMapViewBuilder, formatter, planningCalendarFunctions, MapPlacemark, PlacemarkDetail) {
 	"use strict";
 	/*eslint-env es6*/
 
@@ -12,48 +20,38 @@ sap.ui.define([
 		formatter: formatter,
 
 		onInit: function () {
+			this._oODataModel = this.getOwnerComponent().getModel();
+			this._sTruckPath = undefined;
+			this._oScreenModel = new JSONModel({
+				Truck: {
+				},
+				Timeline: {
+				}
+			});
+			this.getView().setModel(this._oScreenModel);
 			this.getOwnerComponent().getRouter().getRoute("Truck").attachPatternMatched(this.onRouterObjectMatched, this);
-			this._oCalendarModel = new JSONModel();
-			this._oPlanningCalendarService = new PlanningCalendarService();
-			this.getView().setModel(this._oCalendarModel, "Calendar");
-			/*this._oODataModel = this.getOwnerComponent().getModel();
-			this._oYandexMap = new YandexMap();
-
-			this._oYandexMapApiInitialized = $.Deferred();
-			this._oViewBinded = $.Deferred();
-			$.when(this._oViewBinded, this._oYandexMapApiInitialized)
-				.done((sTransporationPath, oYmaps) => this.onMapInit(sTransporationPath));
-
-			this._oYandexMap.initYandexMapsApi().then((oYmaps) => this._oYandexMapApiInitialized.resolve(oYmaps));*/
 		},
-		onMapInit: function (sTransporationPath) {},
-		onTest: function () {},
-		onTransporationRelease: function () {
-
-		},
-		onTransporationCancel: function () {
-
+		onNavBack: function() {
+			history.go(-1);
 		},
 		onRouterObjectMatched: function (oEvent) {
 			let sObjectPath = oEvent.getParameter("arguments").sObjectPath;
-			let that = this;
 			if (sObjectPath && sObjectPath !== "") {
-				that.getOwnerComponent().getModel().metadataLoaded()
-					.then(() => {
-						that.getView().bindElement({
-							path: "/" + sObjectPath,
-							parameters: {
-								expand: `TransportationDetails`
-									//		ShippingLocationDetails,ShippingLocationDetails1,TransportationMessageLogDetails,
-									//		TransportationLocationAssignmentDetails/ShippingLocationDetails`
-							}
-						});
-						//that._oViewBinded.resolve("/" + sObjectPath);
-						that.getOwnerComponent().getModel().readExt("/" + sObjectPath + "/TransportationDetails").then(oData =>
-							that._oCalendarModel.setData(that._oPlanningCalendarService.convertTranportations(oData.results))
-						);
-					});
+				this._sTruckPath = "/" + sObjectPath;
+				this.refreshScreenModel();
 			}
+		},
+		refreshScreenModel: function() {
+			this._oODataModel.readPromise(this._sTruckPath, {
+					urlParameters: {
+						'$expand': `CarrierDetails,TransportationDetails,TransportationDetails/TruckDetails,TransportationDetails/TruckDetails/CarrierDetails,TransportationDetails/ShippingLocationDetails,TransportationDetails/ShippingLocationDetails1`
+					}
+				})
+				.then(oTruck => {
+					this._oScreenModel.setProperty("/Truck", oTruck);
+					let oTimeline = planningCalendarFunctions.convertTranportations(oTruck.TransportationDetails.results);
+					this._oScreenModel.setProperty("/Timeline", oTimeline);
+				});
 		}
 	});
 });

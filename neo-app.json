@@ -28,6 +28,22 @@
         "name": "my_agro_transp_mangm_odata"
       },
       "description": "SAP OData Destination"
+    },
+    {
+      "path": "/ext-resources",
+      "target": {
+        "type": "destination",
+        "name": "localhost_8083"
+      },
+      "description": "localhost_8083"
+    },
+    {
+      "path": "/hcp_mobile_services",
+      "target": {
+        "type": "destination",
+        "name": "hcp_mobile_services"
+      },
+      "description": "hcp_mobile_services"
     }
   ],
   "sendWelcomeFileRedirect": true

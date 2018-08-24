@@ -1,23 +1,278 @@
 <mvc:View controllerName="my.sap_coder_agro_delivery_manager.controller.TransportationList" xmlns:html="http://www.w3.org/1999/xhtml"
 	xmlns="sap.m" xmlns:mvc="sap.ui.core.mvc" xmlns:semantic="sap.m.semantic" xmlns:footerbar="sap.ushell.ui.footerbar"
-	xmlns:form="sap.ui.layout.form" xmlns:core="sap.ui.core" xmlns:unif="sap.ui.unified">
-	<semantic:MasterPage title="Transportation List" showNavButton="true" navButtonPress="onNavBack">
+	xmlns:form="sap.ui.layout.form" xmlns:core="sap.ui.core" xmlns:unif="sap.ui.unified" xmlns:tbl="sap.ui.table" xmlns:c="sap.ui.core"
+	xmlns:unified="sap.ui.unified">
+	<semantic:MasterPage title="АРМ Агродиспетчер" showNavButton="fasle" navButtonPress="onNavBack">
 		<semantic:content>
-			<PullToRefresh id="pullToRefresh" visible="{device>/support/touch}" refresh="onRefresh"/>
-			<Table inset="false" items="{ path: '/Transportations' }">
-				<columns>
-					<Column width="12em">
-						<Text text="Transportation"/>
-					</Column>
-				</columns>
+			<IconTabBar id="iconTabBar">
 				<items>
-					<ColumnListItem press="onTransportationDetailsNav" type="Navigation">
-						<cells>
-							<ObjectIdentifier title="{TransportationNum}" text="{TransportationNum}"/>
-						</cells>
-					</ColumnListItem>
+					<IconTabFilter icon="sap-icon://shipping-status" text="Заказы">
+						<tbl:Table rows="{/Transportations}" visibleRowCount="16" rowActionCount="1">
+							<tbl:toolbar>
+								<Toolbar>
+									<HBox>
+										<Label text="Регион:" class="sapUiSmallMargin"/>
+										<ComboBox selectedKey="{/Region}" items="{/Regions}" showSecondaryValues="true" with="12rem">
+											<core:ListItem key="{Region}" text="{Name}"	additionalText="{Region}"/>
+										</ComboBox>
+									</HBox>
+								</Toolbar>
+							</tbl:toolbar>
+							<tbl:columns>
+								<tbl:Column width="4rem" filterProperty="TransportationNum" defaultFilterOperator="StartsWith" sortProperty="TransportationNum">
+									<Label text="Заказ"/>
+									<tbl:template>
+										<Text text="{TransportationNum}"/>
+									</tbl:template>
+								</tbl:Column>
+								<tbl:Column width="12rem" filterProperty="Status" defaultFilterOperator="StartsWith" sortProperty="Status">
+									<Label text="Статус"/>
+									<tbl:template>
+										<ObjectStatus text="{path: 'Status', formatter:'.formatter.transportationStatusText'}"
+											state="{path:'Status', formatter:'.formatter.transportationStatusState'}"
+											icon="{path:'Status', formatter:'.formatter.transportationStatusIcon'}"/>
+									</tbl:template>
+								</tbl:Column>
+								<tbl:Column width="4rem" filterProperty="Region" defaultFilterOperator="StartsWith" sortProperty="Region">
+									<Label text="Регион"/>
+									<tbl:template>
+										<Text text="{ShippingLocationDetails/Region}"/>
+									</tbl:template>
+								</tbl:Column>
+								<tbl:Column width="9rem" filterProperty="ShippingLocationDetails/Description" defaultFilterOperator="StartsWith"
+									sortProperty="ShippingLocationDetails/Description">
+									<Label text="Отправитель"/>
+									<tbl:template>
+										<Text text="{ShippingLocationDetails/Description} ({ShippingLocationDetails/ShippingLocationKey})"/>
+									</tbl:template>
+								</tbl:Column>
+								<tbl:Column width="9rem" filterProperty="ShippingLocationDetails1/Description" defaultFilterOperator="StartsWith"
+									sortProperty="ShippingLocationDetails1/Description">
+									<Label text="Получатель"/>
+									<tbl:template>
+										<Text text="{ShippingLocationDetails1/Description} ({ShippingLocationDetails1/ShippingLocationKey})"/>
+									</tbl:template>
+								</tbl:Column>
+								<tbl:Column width="8rem">
+									<Label text="Груз"/>
+									<tbl:template>
+										<Text text="{TotalWeight} т / {TotalVolume} м3"/>
+									</tbl:template>
+								</tbl:Column>
+								<tbl:Column width="10rem" filterProperty="TruckDetails/DriverName" defaultFilterOperator="StartsWith" sortProperty="TruckDetails/DriverName">
+									<Label text="Грузовик и Водитель"/>
+									<tbl:template>
+										<Text text="{TruckDetails/Description} / {TruckDetails/DriverName}"/>
+									</tbl:template>
+								</tbl:Column>
+								<tbl:Column width="8rem" filterProperty="TruckDetails/CarrierDetails/Name" defaultFilterOperator="StartsWith"
+									sortProperty="TruckDetails/CarrierDetails/Name">
+									<Label text="Перевозчик"/>
+									<tbl:template>
+										<Text text="{TruckDetails/CarrierDetails/Name}"/>
+									</tbl:template>
+								</tbl:Column>
+								<tbl:Column width="4rem">
+									<c:Icon src="sap-icon://email"/>
+									<tbl:template>
+										<HBox visible="{= (${Chat/UnreadMessageCount} > 0) }">
+											<c:Icon src="sap-icon://alert" class="sapUiTinyMarginEnd" color="#E78C07"/>
+											<Text text=" {Chat/UnreadMessageCount}"/>
+										</HBox>
+									</tbl:template>
+								</tbl:Column>
+								<tbl:Column width="4rem">
+									<c:Icon src="sap-icon://quality-issue"/>
+									<tbl:template>
+										<HBox visible="{= (${RoadEventCount} > 0) }">
+											<c:Icon src="sap-icon://alert" class="sapUiTinyMarginEnd" color="#E78C07"/>
+											<Text text=" {RoadEventCount}"/>
+										</HBox>
+									</tbl:template>
+								</tbl:Column>
+							</tbl:columns>
+							<tbl:rowActionTemplate>
+								<tbl:RowAction>
+									<tbl:items>
+										<tbl:RowActionItem type="Navigation" press="onTransportationDetailsNav"/>
+									</tbl:items>
+								</tbl:RowAction>
+							</tbl:rowActionTemplate>
+						</tbl:Table>
+					</IconTabFilter>
+					<IconTabFilter icon="sap-icon://employee" text="Водители">
+						<tbl:Table rows="{/Trucks}" visibleRowCount="16" rowActionCount="1">
+							<!--<tbl:toolbar>
+								<Toolbar>
+									<CheckBox selected="{/AutoRefresh}" text="Автоматически Обновлять" press="onRefresh"/>
+								</Toolbar>
+							</tbl:toolbar>-->
+							<tbl:columns>
+								<tbl:Column width="8rem" filterProperty="DriverName" defaultFilterOperator="StartsWith" sortProperty="DriverName">
+									<Label text="Водитель"/>
+									<tbl:template>
+										<Text text="{DriverName}"/>
+									</tbl:template>
+								</tbl:Column>
+								<tbl:Column width="9rem" filterProperty="Status" defaultFilterOperator="StartsWith" sortProperty="Status">
+									<Label text="Статус"/>
+									<tbl:template>
+										<ObjectStatus text="{path: 'Status', formatter:'.formatter.truckStatusText'}"
+											state="{path:'Status', formatter:'.formatter.truckStatusState'}" icon="{path:'Status', formatter:'.formatter.truckStatusIcon'}"/>
+									</tbl:template>
+								</tbl:Column>
+								<tbl:Column width="13rem" filterProperty="Description" defaultFilterOperator="StartsWith" sortProperty="Description">
+									<Label text="Грузовик"/>
+									<tbl:template>
+										<Text text="{Description} ({LicensePlateNum})"/>
+									</tbl:template>
+								</tbl:Column>
+								<tbl:Column width="10rem">
+									<Label text="Вес и Объем"/>
+									<tbl:template>
+										<Text text="{MaxWeight} т / {MaxVolume} м3"/>
+									</tbl:template>
+								</tbl:Column>
+								<tbl:Column width="9rem" filterProperty="CarrierDetails/Name" defaultFilterOperator="StartsWith" sortProperty="CarrierDetails/Name">
+									<Label text="Перевозчик"/>
+									<tbl:template>
+										<Text text="{CarrierDetails/Name}"/>
+									</tbl:template>
+								</tbl:Column>
+								<tbl:Column width="7rem" filterProperty="CarrierDetails/ReputationIndex" defaultFilterOperator="StartsWith"
+									sortProperty="CarrierDetails/ReputationIndex">
+									<Label text="Репутация"/>
+									<tbl:template>
+										<HBox>
+											<Text text="{CarrierDetails/ReputationIndex} из 5" class="sapUiTinyMarginEnd"/>
+											<Image src="images/index_1.png" width="20px" height="20px" visible="{= (${CarrierDetails/ReputationIndex} === 1)}"/>
+											<Image src="images/index_2.png" width="20px" height="20px" visible="{= (${CarrierDetails/ReputationIndex} === 2)}"/>
+											<Image src="images/index_3.png" width="20px" height="20px" visible="{= (${CarrierDetails/ReputationIndex} === 3)}"/>
+											<Image src="images/index_4.png" width="20px" height="20px" visible="{= (${CarrierDetails/ReputationIndex} === 4)}"/>
+											<Image src="images/index_5.png" width="20px" height="20px" visible="{= (${CarrierDetails/ReputationIndex} === 5)}"/>
+										</HBox>
+										<!--<RatingIndicator maxValue="5" class="sapUiSmallMarginTop sapUiSmallMarginBottom" value="{CarrierDetails/ReputationIndex}" editable="false"/>-->
+									</tbl:template>
+								</tbl:Column>
+								<tbl:Column width="7rem" filterProperty="CarrierDetails/Regions" defaultFilterOperator="StartsWith" sortProperty="CarrierDetails/Regions">
+									<Label text="Регионы"/>
+									<tbl:template>
+										<Text text="{CarrierDetails/Regions}"/>
+										<!--<MultiInput tokens="{CarrierDetails/CarrierRegionDetails/results}" editable="false">
+											<tokens>
+												<Token key="{Region}"/>
+											</tokens>
+										</MultiInput>-->
+									</tbl:template>
+								</tbl:Column>
+								<tbl:Column width="3rem">
+									<c:Icon src="sap-icon://email"/>
+									<tbl:template>
+										<HBox visible="{= (${Chat/UnreadMessageCount} > 0) }">
+											<c:Icon src="sap-icon://alert"/>
+											<Text text=" {Chat/UnreadMessageCount}"/>
+										</HBox>
+									</tbl:template>
+								</tbl:Column>
+							</tbl:columns>
+							<tbl:rowActionTemplate>
+								<tbl:RowAction>
+									<tbl:items>
+										<tbl:RowActionItem type="Navigation" press="onTruckDetailsNav"/>
+									</tbl:items>
+								</tbl:RowAction>
+							</tbl:rowActionTemplate>
+						</tbl:Table>
+					</IconTabFilter>
+					<IconTabFilter icon="sap-icon://building" text="Локации">
+						<tbl:Table rows="{/ShippingLocations}" visibleRowCount="16" rowActionCount="1">
+							<!--<tbl:toolbar>
+								<Toolbar>
+									<CheckBox selected="{/AutoRefresh}" text="Автоматически Обновлять" press="onRefresh"/>
+								</Toolbar>
+							</tbl:toolbar>-->
+							<tbl:columns>
+								<tbl:Column width="8rem" filterProperty="Description" defaultFilterOperator="StartsWith" sortProperty="Description">
+									<Label text="Локация"/>
+									<tbl:template>
+										<Text text="{Description}"/>
+									</tbl:template>
+								</tbl:Column>
+								<tbl:Column width="12rem" filterProperty="Status" defaultFilterOperator="StartsWith" sortProperty="Status">
+									<Label text="Статус"/>
+									<tbl:template>
+										<ObjectStatus text="Работает" state="Success" icon="sap-icon://accept"/>
+									</tbl:template>
+								</tbl:Column>
+								<tbl:Column width="8rem" filterProperty="Description" defaultFilterOperator="StartsWith" sortProperty="Description">
+									<Label text="Тип Локации"/>
+									<tbl:template>
+										<Text text="{=(${LocationType} === 'PRODUCING') ? 'Ферма' : 'База Хранения'}"/>
+									</tbl:template>
+								</tbl:Column>
+								<tbl:Column width="25rem" filterProperty="City" defaultFilterOperator="StartsWith" sortProperty="City">
+									<Label text="Адрес"/>
+									<tbl:template>
+										<Text text="{RegionName}, {City}, {Street}, {AddressLine}"/>
+									</tbl:template>
+								</tbl:Column>
+								<tbl:Column width="10rem" filterProperty="Region" defaultFilterOperator="StartsWith" sortProperty="Region">
+									<Label text="Регион"/>
+									<tbl:template>
+										<Text text="{Region}"/>
+									</tbl:template>
+								</tbl:Column>
+								<tbl:Column width="4rem">
+									<c:Icon src="sap-icon://quality-issue"/>
+									<tbl:template>
+										<HBox visible="{= (${RoadEventCount} > 0) }">
+											<c:Icon src="sap-icon://alert" class="sapUiTinyMarginEnd" color="#E78C07"/>
+											<Text text=" {RoadEventCount}"/>
+										</HBox>
+									</tbl:template>
+								</tbl:Column>
+							</tbl:columns>
+							<tbl:rowActionTemplate>
+								<tbl:RowAction>
+									<tbl:items>
+										<tbl:RowActionItem type="Navigation" press="onNavigateToShippingLocation"/>
+									</tbl:items>
+								</tbl:RowAction>
+							</tbl:rowActionTemplate>
+						</tbl:Table>
+					</IconTabFilter>
+					<IconTabFilter icon="sap-icon://gantt-bars" text="График">
+						<PlanningCalendar startDate="{path: '/Timeline/startDate'}" rows="{path: '/Timeline/rows'}" appointmentsVisualization="Filled"
+							appointmentSelect="handleAppointmentSelect" showEmptyIntervalHeaders="false" showWeekNumbers="true" viewKey="H">
+							<!--<toolbarContent>
+								<CheckBox selected="{/AutoRefresh}" text="Автоматически Обновлять" press="onRefresh"/>
+							</toolbarContent>-->
+							<views>
+								<PlanningCalendarView key="H" intervalType="Hour" description="Часы" intervalsS="2" intervalsM="2" intervalsL="2" showSubIntervals="true"></PlanningCalendarView>
+								<PlanningCalendarView key="D" intervalType="Day" description="Дни" intervalsS="2" intervalsM="2" intervalsL="2" showSubIntervals="true"></PlanningCalendarView>
+							</views>
+							<rows>
+								<PlanningCalendarRow icon="{pic}" title="{name}" text="{role}" appointments="{path : 'appointments', templateShareable: 'true'}"
+									intervalHeaders="{path: 'headers', templateShareable: 'true'}">
+									<customData>
+										<core:CustomData key="emp-name" value="{name}" writeToDom="true"/>
+									</customData>
+									<appointments>
+										<unified:CalendarAppointment startDate="{start}" endDate="{end}" icon="{pic}" title="{title}" text="{Calendar>info}" type="{type}"
+											tentative="{tentative}"></unified:CalendarAppointment>
+									</appointments>
+									<intervalHeaders>
+										<unified:CalendarAppointment startDate="{start}" endDate="{end}" icon="{pic}" title="{title}" type="{type}"></unified:CalendarAppointment>
+									</intervalHeaders>
+								</PlanningCalendarRow>
+							</rows>
+						</PlanningCalendar>
+					</IconTabFilter>
 				</items>
-			</Table>
+			</IconTabBar>
 		</semantic:content>
+		<semantic:customFooterContent>
+			<CheckBox selected="{/AutoRefresh}" text="Автоматически обновлять"/>
+		</semantic:customFooterContent>
 	</semantic:MasterPage>
 </mvc:View>

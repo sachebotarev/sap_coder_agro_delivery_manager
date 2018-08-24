@@ -1,96 +1,124 @@
 <mvc:View controllerName="my.sap_coder_agro_delivery_manager.controller.Transportation" xmlns:html="http://www.w3.org/1999/xhtml"
 	xmlns="sap.m" xmlns:mvc="sap.ui.core.mvc" xmlns:semantic="sap.m.semantic" xmlns:footerbar="sap.ushell.ui.footerbar"
 	xmlns:form="sap.ui.layout.form" xmlns:core="sap.ui.core" xmlns:unified="sap.ui.unified" xmlns:tbl="sap.ui.table"
-	xmlns:comm="sap.suite.ui.commons">
-	<semantic:MasterPage title="Transportation Details" showNavButton="true" navButtonPress="onNavBack">
+	xmlns:comm="sap.suite.ui.commons" xmlns:suite="sap.suite.ui.commons">
+	<semantic:MasterPage title="Детали Заказа на Транспортировку" showNavButton="true" navButtonPress="onNavBack">
 		<semantic:content>
 			<PullToRefresh id="pullToRefresh" visible="{device>/support/touch}" refresh="onRefresh"/>
-			<ObjectHeader id="objectHeader" title="Transportation # {TransportationNum}" icon="sap-icon://visits">
+			<ObjectHeader id="objectHeader" title="Заказ на Транспортировку № {TransportationNum}" icon="sap-icon://shipping-status">
 				<attributes>
-					<ObjectAttribute title="Shiping details"
-						text="From {ShipFrom} - {ShippingLocationDetails/Description} To {ShipTo} - {ShippingLocationDetails1/Description}"/>
+					<ObjectAttribute title="Детали"
+						text="Из {ShippingLocationDetails/Description} в {ShippingLocationDetails1/Description}, груз {TotalWeight} т / {TotalVolume} м3, стоимость {TotalPriceRub} руб"/>
 				</attributes>
 				<statuses>
-					<ObjectStatus text="{Status}" state="{path:'Status', formatter:'.formatter.transportationStatusState'}"
+					<ObjectStatus text="{path: 'Status', formatter:'.formatter.transportationStatusText'}"
+						state="{path:'Status', formatter:'.formatter.transportationStatusState'}"
 						icon="{path:'Status', formatter:'.formatter.transportationStatusIcon'}"/>
 				</statuses>
 			</ObjectHeader>
 			<IconTabBar id="iconTabBar" class="sapUiResponsiveContentPadding">
 				<items>
-					<IconTabFilter icon="sap-icon://map-3" tooltip="Map">
-						<!--<Toolbar>
-							<Button text="Refresh" press="onTest"/>
-							<Button text="Prepare Step 1" press="onTest"/>
-							<Button text="Prepare Step 2" press="onTest"/>
-							<Button text="Send notifications" press="onTest"/>
-						</Toolbar>-->
+					<IconTabFilter icon="sap-icon://map-3" text="Карта">
 						<html:div id="map" style="width: 100%; height: 400px; padding: 0; margin: 0;"></html:div>
 						<IconTabBar>
 							<items>
-								<IconTabFilter text="Trucks">
-									<tbl:Table selectionMode="None" rows="{TransportationAssignmentDetails}" visibleRowCount="4" enableCellFilter="true" rowActionCount="1"
-										rowSelectionChange="onTransportationAssignmentTableRawSelected">
+								<IconTabFilter text="Водители">
+									<tbl:Table selectionMode="None" rows="{TransportationAssignmentDetails/results}" visibleRowCount="3" enableCellFilter="true"
+										rowActionCount="1" rowSelectionChange="onTransportationAssignmentTableRawSelected" sort="AssignmentIndex">
+										<tbl:toolbar>
+											<Toolbar>
+												<Button text="Удалить Выбранные" icon="sap-icon://delete" press="onTruckAssignmentDeleteSelected" enabled="{IsTruckAssignmentSelected}"/>
+											</Toolbar>
+										</tbl:toolbar>
 										<tbl:columns>
-											<tbl:Column width="3rem">
+											<tbl:Column width="4rem">
 												<Label text=""/>
 												<tbl:template>
-													<CheckBox selected="{Selected}" wrapping="false"/>
+													<CheckBox selected="{IsSelected}"/>
 												</tbl:template>
 											</tbl:Column>
-											<tbl:Column width="4rem">
-												<Label text="Status"/>
+											<tbl:Column width="3rem" sortProperty="AssignmentIndex" filterProperty="AssignmentIndex" defaultFilterOperator="StartsWith">
+												<Label text="№"/>
 												<tbl:template>
-													<core:Icon size="1rem" src="{=(${Status} === 'ACCEPTED') ? 'sap-icon://accept' : ''}"
-														class="sapUiSmallMarginBegin sapUiSmallMarginTopBottom"/>
+													<Text text="{AssignmentIndex}"/>
 												</tbl:template>
 											</tbl:Column>
-											<tbl:Column width="4rem">
-												<Label text="Index"/>
+											<tbl:Column width="10rem">
+												<Label text="Статус"/>
 												<tbl:template>
-													<Label text="{AssignmentIndex}"/>
+													<HBox>
+														<Image src="images/stopped.png" width="20px" height="20px" visible="{=(${TruckDetails/Status} === 'STOPPED')}" class="sapUiTinyMarginEnd"/>
+														<Image src="images/message_sent.png" width="20px" height="20px" visible="{=(${Status} === 'REQUEST_SEND')}" class="sapUiTinyMarginEnd"/>
+														<Image src="images/request_received.png" width="20px" height="20px" visible="{=(${Status} === 'REQUEST_DELIVERED')}" class="sapUiTinyMarginEnd"/>
+														<Image src="images/request_read2.png" width="20px" height="20px" visible="{=(${Status} === 'REQUEST_READ')}" class="sapUiTinyMarginEnd"/>
+														<Image src="images/request_rejected.png" width="20px" height="20px" visible="{=(${Status} === 'REJECTED')}" class="sapUiTinyMarginEnd"/>
+														<Image src="images/ready.png" width="20px" height="20px" visible="{=(${TruckDetails/Status} === 'READY')}" class="sapUiTinyMarginEnd"/>
+														<Image src="images/busy.png" width="20px" height="20px" visible="{=(${TruckDetails/Status} === 'BUSY')}" class="sapUiTinyMarginEnd"/>
+														<Image src="images/request_accepted.png" width="20px" height="20px" visible="{=(${Status} === 'ACCEPTED')}" class="sapUiTinyMarginEnd"/>
+														<!--<Image src="images/unknown.png" width="20px" height="20px" visible="{=(${Status} === 'INACTIVE')}" class="sapUiTinyMarginEnd"/>-->
+														<Text text="{=
+															(${TruckDetails/Status} === 'STOPPED') ? 'Недоступен': 
+															(${Status} === 'ACCEPTED') ? 'Принял' : 
+															(${Status} === 'REJECTED') ? 'Отклонил' : 
+															(${Status} === 'REQUEST_SEND') ? 'Отправлено' :
+															(${Status} === 'REQUEST_DELIVERED') ? 'Доставлено' :
+															(${Status} === 'REQUEST_READ') ? 'Прочитано' :
+															(${TruckDetails/Status} === 'READY') ? 'Готов': 
+															(${TruckDetails/Status} === 'BUSY') ? 'Занят': 
+															''
+														}"/>
+													</HBox>
+													
 												</tbl:template>
 											</tbl:Column>
-											<tbl:Column sortProperty="Truck" filterProperty="Truck" defaultFilterOperator="StartsWith">
-												<Label text="Truck"/>
+											<tbl:Column width="16rem" sortProperty="TruckDetails/DriverName" filterProperty="TruckDetails/DriverName" defaultFilterOperator="StartsWith">
+												<Label text="Водитель и Грузовик"/>
 												<tbl:template>
-													<Text text="{Truck} ({TruckDetails/Description}" wrapping="false"/>
-												</tbl:template>
-											</tbl:Column>
-											<tbl:Column width="4rem">
-												<Label text="Preferred"/>
-												<tbl:template>
-													<core:Icon size="1rem" src="{=(${Preferred}) ? 'sap-icon://favorite' : ''}"
-														class="sapUiSmallMarginBegin sapUiSmallMarginTopBottom"/>
+													<Text text="{TruckDetails/DriverName} / {TruckDetails/Description} ({TruckDetails/LicensePlateNum})" />
 												</tbl:template>
 											</tbl:Column>
 											<tbl:Column width="7rem">
-												<Label text="Arrival Time"/>
+												<Label text="Приоритет"/>
 												<tbl:template>
-													<Label text="{ArrivalTimeMinutes} min"/>
+													<core:Icon size="1rem" src="{=(${Preferred}) ? 'sap-icon://favorite' : ''}" class="sapUiTinyMargin" color="#E09D00"/>
 												</tbl:template>
 											</tbl:Column>
-											<tbl:Column>
-												<Label text="Price"/>
+											<tbl:Column width="7rem">
+												<Label text="Время прибытия"/>
 												<tbl:template>
-													<Label text="{ProposedPrice} RUB"/>
+													<HBox>
+														<Text text="{ArrivalTimeMinutes} мин" class="sapUiTinyMarginEnd"/>
+														<Image src="images/status_1_of_5.png" width="20px" height="20px" visible="{= (${ArrivalTimeScore} === 1)}"/>
+														<Image src="images/status_2_of_5.png" width="20px" height="20px" visible="{= (${ArrivalTimeScore} === 2)}"/>
+														<Image src="images/status_3_of_5.png" width="20px" height="20px" visible="{= (${ArrivalTimeScore} === 3)}"/>
+														<Image src="images/status_4_of_5.png" width="20px" height="20px" visible="{= (${ArrivalTimeScore} === 4)}"/>
+														<Image src="images/status_5_of_5.png" width="20px" height="20px" visible="{= (${ArrivalTimeScore} === 5)}"/>
+													</HBox>
 												</tbl:template>
 											</tbl:Column>
-											<tbl:Column sortProperty="Capacity" filterProperty="Capacity" defaultFilterOperator="StartsWith">
-												<Label text="Capacity"/>
+											<tbl:Column sortProperty="TruckDetails/MaxWeight" filterProperty="TruckDetails/MaxWeight" defaultFilterOperator="StartsWith">
+												<Label text="Вес и Объем"/>
 												<tbl:template>
-													<Text text="{TruckDetails/MaxWeight} TON" wrapping="false"/>
+													<Text text="{TruckDetails/MaxWeight} т / {TruckDetails/MaxVolume} м3" wrapping="false"/>
 												</tbl:template>
 											</tbl:Column>
-											<tbl:Column id="Carrier" sortProperty="Carrier" filterProperty="Carrier" defaultFilterOperator="StartsWith">
-												<Label text="Carrier"/>
+											<tbl:Column sortProperty="Carrier" filterProperty="Carrier" defaultFilterOperator="StartsWith">
+												<Label text="Перевозчик"/>
 												<tbl:template>
-													<Text text="{TruckDetails/Carrier} ({TruckDetails/CarrierDetails/Name})" wrapping="false"/>
+													<Text text="{TruckDetails/CarrierDetails/Name}" wrapping="false"/>
 												</tbl:template>
 											</tbl:Column>
-											<tbl:Column id="ReputationIndex" sortProperty="ReputationIndex" filterProperty="ReputationIndex" defaultFilterOperator="StartsWith">
-												<Label text="Reputation"/>
+											<tbl:Column sortProperty="ReputationIndex" filterProperty="ReputationIndex" defaultFilterOperator="StartsWith">
+												<Label text="Репутация"/>
 												<tbl:template>
-													<RatingIndicator maxValue="5" class="sapUiSmallMarginBottom" value="{ReputationIndex}" editable="true"/>
+													<HBox>
+														<Text text="{TruckDetails/CarrierDetails/ReputationIndex} из 5" class="sapUiTinyMarginEnd"/>
+														<Image src="images/index_1.png" width="20px" height="20px" visible="{= (${TruckDetails/CarrierDetails/ReputationIndex} === 1)}"/>
+														<Image src="images/index_2.png" width="20px" height="20px" visible="{= (${TruckDetails/CarrierDetails/ReputationIndex} === 2)}"/>
+														<Image src="images/index_3.png" width="20px" height="20px" visible="{= (${TruckDetails/CarrierDetails/ReputationIndex} === 3)}"/>
+														<Image src="images/index_4.png" width="20px" height="20px" visible="{= (${TruckDetails/CarrierDetails/ReputationIndex} === 4)}"/>
+														<Image src="images/index_5.png" width="20px" height="20px" visible="{= (${TruckDetails/CarrierDetails/ReputationIndex} === 5)}"/>
+													</HBox>
 												</tbl:template>
 											</tbl:Column>
 										</tbl:columns>
@@ -103,8 +131,8 @@
 										</tbl:rowActionTemplate>
 									</tbl:Table>
 								</IconTabFilter>
-								<IconTabFilter text="Storage Locations">
-									<tbl:Table selectionMode="None" rows="{TransportationLocationAssignmentDetails}" visibleRowCount="4" enableCellFilter="true"
+								<IconTabFilter text="Локации">
+									<tbl:Table selectionMode="None" rows="{TransportationLocationAssignmentDetails/results}" visibleRowCount="3" enableCellFilter="true"
 										rowActionCount="1" rowSelectionChange="onTransportationAssignmentTableRawSelected">
 										<!--<tbl:toolbar>
 											<Toolbar>
@@ -117,53 +145,66 @@
 											</Toolbar>
 										</tbl:toolbar>-->
 										<tbl:columns>
-											<tbl:Column width="3rem">
-												<Label text="Sel."/>
+											<tbl:Column width="4rem">
+												<Label text=""/>
 												<tbl:template>
-													<CheckBox selected="{Selected}" wrapping="false"/>
+													<CheckBox selected="{IsSelected}" wrapping="false"/>
 												</tbl:template>
 											</tbl:Column>
 											<tbl:Column width="4rem">
-												<Label text="Status"/>
+												<Label text="Статус"/>
 												<tbl:template>
 													<core:Icon size="1rem" src="{=(${Status} === 'ACCEPTED') ? 'sap-icon://accept' : ''}"
-														class="sapUiSmallMarginBegin sapUiSmallMarginTopBottom"/>
+														class="sapUiTinyMargin" color="#2B7D2B"/>
 												</tbl:template>
 											</tbl:Column>
-											<tbl:Column width="4rem">
-												<Label text="Index"/>
+											<tbl:Column width="3rem">
+												<Label text="№"/>
 												<tbl:template>
 													<Label text="{AssignmentIndex}"/>
 												</tbl:template>
 											</tbl:Column>
 											<tbl:Column>
-												<Label text="Location"/>
+												<Label text="База Хранения"/>
 												<tbl:template>
-													<Text text="{ShipToLocation} ({ShippingLocation/Description})" wrapping="false"/>
+													<Text text="{ShippingLocationDetails/Description}"/>
 												</tbl:template>
 											</tbl:Column>
 											<tbl:Column>
-												<Label text="Total Time"/>
+												<Label text="Итоговое Время"/>
 												<tbl:template>
-													<Text text="{ProcessingTimeMinutes} min" wrapping="false"/>
+													<HBox>
+														<Text text="{ProcessingTimeMinutes} мин" class="sapUiTinyMarginEnd"/>
+														<Image src="images/status_1_of_5.png" width="20px" height="20px" visible="{= (${ProcessingTimeScore} === 1)}"/>
+														<Image src="images/status_2_of_5.png" width="20px" height="20px" visible="{= (${ProcessingTimeScore} === 2)}"/>
+														<Image src="images/status_3_of_5.png" width="20px" height="20px" visible="{= (${ProcessingTimeScore} === 3)}"/>
+														<Image src="images/status_4_of_5.png" width="20px" height="20px" visible="{= (${ProcessingTimeScore} === 4)}"/>
+														<Image src="images/status_5_of_5.png" width="20px" height="20px" visible="{= (${ProcessingTimeScore} === 5)}"/>
+													</HBox>
 												</tbl:template>
 											</tbl:Column>
 											<tbl:Column>
-												<Label text="Travel Time"/>
+												<Label text="Время в Пути"/>
 												<tbl:template>
-													<Text text="{TravelTimeMinutes} min" wrapping="false"/>
+													<Text text="{TravelTimeMinutes} мин"/>
 												</tbl:template>
 											</tbl:Column>
 											<tbl:Column>
-												<Label text="Queue Time"/>
+												<Label text="Время Ожидания Разгрузки"/>
 												<tbl:template>
-													<Text text="{UnloadQueueTimeMinutes} min" wrapping="false"/>
+													<Text text="{UnloadQueueTimeMinutes} мин"/>
 												</tbl:template>
 											</tbl:Column>
 											<tbl:Column>
-												<Label text="Unload Time"/>
+												<Label text="Время Разгрузки"/>
 												<tbl:template>
-													<Text text="{UnloadTimeMinutes} min" wrapping="false"/>
+													<Text text="{UnloadTimeMinutes} мин"/>
+												</tbl:template>
+											</tbl:Column>
+											<tbl:Column>
+												<Label text="Расстояние"/>
+												<tbl:template>
+													<Text text="{TravelMileageKm} км"/>
 												</tbl:template>
 											</tbl:Column>
 										</tbl:columns>
@@ -179,70 +220,121 @@
 							</items>
 						</IconTabBar>
 					</IconTabFilter>
-					<IconTabFilter icon="sap-icon://hint" tooltip="Details">
+					<IconTabFilter icon="sap-icon://hint" text="Детали">
 						<form:Form>
 							<form:layout>
 								<form:ResponsiveGridLayout/>
 							</form:layout>
 							<form:formContainers>
 								<form:FormContainer>
-									<form:FormElement label="Kick-off Date">
+									<form:FormElement label="Дата и время поступления заказа">
 										<form:fields>
-											<DateTimePicker value="{path:'KickOffDate', type:'sap.ui.model.type.DateTime', formatOptions: { style: 'short', strictParsing: true}}"/>
+											<Text text="{path:'KickOffDate', type:'sap.ui.model.type.DateTime', formatOptions: { style: 'short', strictParsing: true}}"/>
 										</form:fields>
 									</form:FormElement>
-									<form:FormElement label="Ship From">
+									<form:FormElement label="Отправитель">
 										<form:fields>
-											<Text text="{ShipFrom} ({ShippingLocationDetails/Description})"/>
+											<Text text="{ShippingLocationDetails/Description} ({ShipFrom})"/>
 										</form:fields>
 									</form:FormElement>
-									<form:FormElement label="Ship To">
+									<form:FormElement label="Получатель">
 										<form:fields>
-											<Text text="{ShipTo} ({ShippingLocationDetails1/Description})"/>
+											<Text text="{ShippingLocationDetails1/Description} ({ShipTo})"/>
 										</form:fields>
 									</form:FormElement>
-									<form:FormElement label="Truck">
+									<form:FormElement label="Стоимость">
 										<form:fields>
-											<Text text="{Truck} ({TruckDetails/Description})"/>
+											<Text text="{TotalPriceRub} руб"/>
 										</form:fields>
 									</form:FormElement>
-									<form:FormElement label="Carrier">
+									<form:FormElement label="Вес и Объем">
 										<form:fields>
-											<Text text="{TruckDetails/Carrier} ({TruckDetails/CarrierDetails/Name})"/>
+											<Text text="{TotalWeight} т / {TotalVolume} м3"/>
 										</form:fields>
 									</form:FormElement>
-									<form:FormElement label="Way Bill">
+									<form:FormElement label="Расстояние и Время">
 										<form:fields>
-											<Input value="{WayBillPdfMediaResource}"/>
+											<Text text="{TravelMileageKm} км / {TravelTimeMinutes} мин."/>
+										</form:fields>
+									</form:FormElement>
+									<form:FormElement label="Комментарий">
+										<form:fields>
+											<Text text="{Comment}"/>
+										</form:fields>
+									</form:FormElement>
+									<form:FormElement label="Оценка Выполнения">
+										<form:fields>
+											<RatingIndicator maxValue="5" class="sapUiTinyMargin" value="{RatingMark}" editable="false" visible="{= (${Status} === '090.COMPLETED') }"/>
+										</form:fields>
+									</form:FormElement>
+									<form:FormElement label="Позиции к перевозке">
+										<form:fields>
+											<List items="{TransportationItemDetails/results}">
+												<items>
+													<ObjectListItem icon="sap-icon://product" title="{Description}" number="{Quantity}" numberUnit="{QuantityUom}">
+														<attributes>
+															<ObjectAttribute text="{Weight} т"/>
+															<ObjectAttribute text="{Volume} м3"/>
+														</attributes>
+													</ObjectListItem>
+												</items>
+											</List>
+										</form:fields>
+									</form:FormElement>
+									<form:FormElement label="Накладная">
+										<form:fields>
+											<!--<Link text="Скачать Товарную Накладную в pdf" target="_blank" href="{/Transportation/MediaResourceDetails/__metadata/media_src}"/>-->
+											<PDFViewer class="sapUiSmallMarginBegin" source="{MediaResourceDetails/__metadata/media_src}" title="Транспортная Накладная"
+														width="auto" height="30rem">
+														<layoutData>
+															<FlexItemData growFactor="1"/>
+														</layoutData>
+													</PDFViewer>
 										</form:fields>
 									</form:FormElement>
 								</form:FormContainer>
 							</form:formContainers>
 						</form:Form>
 					</IconTabFilter>
-					<IconTabFilter icon="sap-icon://gantt-bars" tooltip="Timeline">
-						<PlanningCalendar startDate="{path: 'Calendar>/startDate'}" rows="{path: 'Calendar>/rows'}" appointmentsVisualization="Filled"
+					<IconTabFilter icon="sap-icon://process" text="Процесс">
+						<suite:ProcessFlow scrollable="true" foldedCorners="true" nodePress="onNodePress" nodeTitlePress="onNodeTitlePress"
+							nodes="{ProcessFlow/nodes}" lanes="{ProcessFlow/lanes}">
+							<suite:nodes>
+								<suite:ProcessFlowNode laneId="{lane}" nodeId="{id}" title="{title}"
+									titleAbbreviation="{titleAbbreviation}" isTitleClickable="{isTitleClickable}" children="{children}"
+									state="{state}" stateText="{stateText}" texts="{texts}" highlighted="{highlighted}"
+									focused="{focused}"/>
+							</suite:nodes>
+							<suite:lanes>
+								<suite:ProcessFlowLaneHeader laneId="{id}" iconSrc="{icon}" text="{label}"
+									position="{position}"/>
+							</suite:lanes>
+						</suite:ProcessFlow>
+					</IconTabFilter>
+					<IconTabFilter icon="sap-icon://gantt-bars" text="График">
+						<PlanningCalendar startDate="{path: 'Timeline/startDate'}" rows="{path: 'Timeline/rows'}" appointmentsVisualization="Filled"
 							appointmentSelect="handleAppointmentSelect" showEmptyIntervalHeaders="false" showWeekNumbers="true" viewKey="H">
+							<toolbarContent>
+								<Title text="Title" titleStyle="H4"/>
+							</toolbarContent>
 							<views>
-								<PlanningCalendarView key="H" intervalType="Hour" description="hours view" intervalsS="2" intervalsM="2" intervalsL="2"
+								<PlanningCalendarView key="H" intervalType="Hour" description="Часы" intervalsS="2" intervalsM="2" intervalsL="2"
 									showSubIntervals="true"></PlanningCalendarView>
-								<PlanningCalendarView key="D" intervalType="Day" description="days view" intervalsS="1" intervalsM="3" intervalsL="7"
+								<PlanningCalendarView key="D" intervalType="Day" description="Дни" intervalsS="2" intervalsM="2" intervalsL="2"
 									showSubIntervals="true"></PlanningCalendarView>
 							</views>
 							<rows>
-								<PlanningCalendarRow icon="{Calendar>pic}" title="{Calendar>name}" text="{Calendar>role}"
-									appointments="{path : 'Calendar>appointments', templateShareable: 'true'}"
-									intervalHeaders="{path: 'Calendar>headers', templateShareable: 'true'}">
+								<PlanningCalendarRow icon="{pic}" title="{name}" text="{role}" appointments="{path : 'appointments', templateShareable: 'true'}"
+									intervalHeaders="{path: 'headers', templateShareable: 'true'}">
 									<customData>
-										<core:CustomData key="emp-name" value="{Calendar>name}" writeToDom="true"/>
+										<core:CustomData key="emp-name" value="{name}" writeToDom="true"/>
 									</customData>
 									<appointments>
-										<unified:CalendarAppointment startDate="{Calendar>start}" endDate="{Calendar>end}" icon="{Calendar>pic}" title="{Calendar>title}"
-											text="{Calendar>info}" type="{Calendar>type}" tentative="{Calendar>tentative}"></unified:CalendarAppointment>
+										<unified:CalendarAppointment startDate="{start}" endDate="{end}" icon="{pic}" title="{title}" text="{Calendar>info}" type="{type}"
+											tentative="{tentative}"></unified:CalendarAppointment>
 									</appointments>
 									<intervalHeaders>
-										<unified:CalendarAppointment startDate="{Calendar>start}" endDate="{Calendar>end}" icon="{Calendar>pic}" title="{Calendar>title}"
-											type="{Calendar>type}"></unified:CalendarAppointment>
+										<unified:CalendarAppointment startDate="{start}" endDate="{end}" icon="{pic}" title="{title}" type="{type}"></unified:CalendarAppointment>
 									</intervalHeaders>
 								</PlanningCalendarRow>
 							</rows>
@@ -252,86 +344,86 @@
 								<form:ResponsiveGridLayout/>
 							</form:layout>
 							<form:formContainers>
-								<form:FormContainer title="Planned Time Line">
-									<form:FormElement label="Kicked-off at" visible="{=(${KickOffDate} !== null)}">
+								<form:FormContainer title="Плановый График">
+									<form:FormElement label="Время Начала" visible="{=(${KickOffDate} !== null)}">
 										<form:fields>
 											<!--pattern: 'HH:mm / yyyy-MM-dd'-->
 											<Text text="{path:'KickOffDate', type:'sap.ui.model.type.DateTime', formatOptions: { pattern: 'HH:mm' }}"/>
 										</form:fields>
 									</form:FormElement>
-									<form:FormElement label="Assignment Time" visible="{=(${AssignmentTimeMinutes} !== null)}">
+									<form:FormElement label="Время Поиска Водителя" visible="{=(${AssignmentTimeMinutes} !== null)}">
 										<form:fields>
-											<Text text="{AssignmentTimeMinutes} minutes"/> 
+											<Text text="{AssignmentTimeMinutes} мин"/>
 										</form:fields>
 									</form:FormElement>
-									<form:FormElement label="Truck Assigned at" visible="{=(${TruckAssignedDateTime} !== null)}">
+									<form:FormElement label="Водитель найден" visible="{=(${TruckAssignedDateTime} !== null)}">
 										<form:fields>
 											<Text text="{path:'TruckAssignedDateTime', type:'sap.ui.model.type.DateTime', formatOptions: { pattern: 'HH:mm' }}"/>
 										</form:fields>
 									</form:FormElement>
-									<form:FormElement label="Arrival Time" visible="{=(${ArrivalTimeMinutes} !== null)}">
+									<form:FormElement label="Время Прибытия" visible="{=(${ArrivalTimeMinutes} !== null)}">
 										<form:fields>
-											<Text text="{ArrivalTimeMinutes} minutes"/> 
+											<Text text="{ArrivalTimeMinutes} мин"/>
 										</form:fields>
 									</form:FormElement>
-									<form:FormElement label="Arrived to Loading at" visible="{=(${StartDateTime} !== null)}">
+									<form:FormElement label="Прибыл на загрузку" visible="{=(${StartDateTime} !== null)}">
 										<form:fields>
 											<Text text="{path:'StartDateTime', type:'sap.ui.model.type.DateTime', formatOptions: { pattern: 'HH:mm' }}"/>
 										</form:fields>
 									</form:FormElement>
-									<form:FormElement label="Load Queue time" visible="{=(${LoadQueueTimeMinutes} !== null)}">
+									<form:FormElement label="Время Загрузки" visible="{=(${LoadQueueTimeMinutes} !== null)}">
 										<form:fields>
-											<Text text="{LoadQueueTimeMinutes} minutes"/> 
+											<Text text="{LoadQueueTimeMinutes} мин"/>
 										</form:fields>
 									</form:FormElement>
-									<form:FormElement label="Load starts at" visible="{=(${LoadStartDateTime} !== null)}">
+									<form:FormElement label="Загрузка Начинается в" visible="{=(${LoadStartDateTime} !== null)}">
 										<form:fields>
 											<Text text="{path:'LoadStartDateTime', type:'sap.ui.model.type.DateTime', formatOptions: { pattern: 'HH:mm' }}"/>
 										</form:fields>
 									</form:FormElement>
-									<form:FormElement label="Load time" visible="{=(${LoadTimeMinutes} !== null)}">
+									<form:FormElement label="Время Загрузки" visible="{=(${LoadTimeMinutes} !== null)}">
 										<form:fields>
-											<Text text="{LoadTimeMinutes} minutes"/> 
+											<Text text="{LoadTimeMinutes} мин"/>
 										</form:fields>
 									</form:FormElement>
-									<form:FormElement label="Travel starts at" visible="{=(${TravelStartDateTime} !== null)}">
+									<form:FormElement label="Перевозка начинается в" visible="{=(${TravelStartDateTime} !== null)}">
 										<form:fields>
 											<Text text="{path:'TravelStartDateTime', type:'sap.ui.model.type.DateTime', formatOptions: { pattern: 'HH:mm' }}"/>
 										</form:fields>
 									</form:FormElement>
-									<form:FormElement label="Travel time" visible="{=(${TravelTimeMinutes} !== null)}">
+									<form:FormElement label="Время Перевозки" visible="{=(${TravelTimeMinutes} !== null)}">
 										<form:fields>
-											<Text text="{TravelTimeMinutes} minutes"/> 
+											<Text text="{TravelTimeMinutes} мин"/>
 										</form:fields>
 									</form:FormElement>
-									<form:FormElement label="Arrived to Unload at" visible="{=(${UnloadQueueStartDateTime} !== null)}">
+									<form:FormElement label="Прибыл на разгрузку в" visible="{=(${UnloadQueueStartDateTime} !== null)}">
 										<form:fields>
 											<Text text="{path:'UnloadQueueStartDateTime', type:'sap.ui.model.type.DateTime', formatOptions: { pattern: 'HH:mm' }}"/>
 										</form:fields>
 									</form:FormElement>
-									<form:FormElement label="Unload Queue time" visible="{=(${UnloadQueueTimeMinutes} !== null)}">
+									<form:FormElement label="Время ожидания Разгрузки" visible="{=(${UnloadQueueTimeMinutes} !== null)}">
 										<form:fields>
-											<Text text="{UnloadQueueTimeMinutes} minutes"/> 
+											<Text text="{UnloadQueueTimeMinutes} мин"/>
 										</form:fields>
 									</form:FormElement>
-									<form:FormElement label="Unload Stars at" visible="{=(${UnloadStartDateTime} !== null)}">
+									<form:FormElement label="Разгрузка начинается в" visible="{=(${UnloadStartDateTime} !== null)}">
 										<form:fields>
 											<Text text="{path:'UnloadStartDateTime', type:'sap.ui.model.type.DateTime', formatOptions: { pattern: 'HH:mm' }}"/>
 										</form:fields>
 									</form:FormElement>
-									<form:FormElement label="Unload time" visible="{=(${UnloadTimeMinutes} !== null)}">
+									<form:FormElement label="Время Разгрузки" visible="{=(${UnloadTimeMinutes} !== null)}">
 										<form:fields>
-											<Text text="{UnloadTimeMinutes} minutes"/> 
+											<Text text="{UnloadTimeMinutes} мин"/>
 										</form:fields>
 									</form:FormElement>
-									<form:FormElement label="Finished at" visible="{=(${EndDateTime} !== null)}">
+									<form:FormElement label="Завершено в" visible="{=(${EndDateTime} !== null)}">
 										<form:fields>
 											<Text text="{path:'EndDateTime', type:'sap.ui.model.type.DateTime', formatOptions: { pattern: 'HH:mm' }}"/>
 										</form:fields>
 									</form:FormElement>
 								</form:FormContainer>
-								<form:FormContainer title="Actual Time Line">
-									<form:FormElement label="Kicked-off at" visible="{=(${KickOffDate} !== null)}">
+								<form:FormContainer title="Фактический График">
+									<form:FormElement label="Время Начала" visible="{=(${KickOffDate} !== null)}">
 										<form:fields>
 											<!--pattern: 'HH:mm / yyyy-MM-dd'-->
 											<Text text="{path:'KickOffDate', type:'sap.ui.model.type.DateTime', formatOptions: { pattern: 'HH:mm' }}"/>
@@ -339,7 +431,7 @@
 									</form:FormElement>
 									<form:FormElement label="Assignment Time" visible="{=(${AssignmentTimeActualMinutes} !== null)}">
 										<form:fields>
-											<Text text="{AssignmentTimeActualMinutes} minutes"/> 
+											<Text text="{AssignmentTimeActualMinutes} мин"/>
 										</form:fields>
 									</form:FormElement>
 									<form:FormElement label="Truck Assigned at" visible="{=(${TruckAssignedActualDateTime} !== null)}">
@@ -347,9 +439,9 @@
 											<Text text="{path:'TruckAssignedActualDateTime', type:'sap.ui.model.type.DateTime', formatOptions: { pattern: 'HH:mm' }}"/>
 										</form:fields>
 									</form:FormElement>
-									<form:FormElement label="Arrival Time"  visible="{=(${ArrivalTimeActualMinutes} !== null)}">
+									<form:FormElement label="Arrival Time" visible="{=(${ArrivalTimeActualMinutes} !== null)}">
 										<form:fields>
-											<Text text="{ArrivalTimeActualMinutes} minutes"/> 
+											<Text text="{ArrivalTimeActualMinutes} мин"/>
 										</form:fields>
 									</form:FormElement>
 									<form:FormElement label="Arrived to Loading at" visible="{=(${StartActualDateTime} !== null)}">
@@ -359,7 +451,7 @@
 									</form:FormElement>
 									<form:FormElement label="Load Queue time" visible="{=(${LoadQueueTimeActualMinutes} !== null)}">
 										<form:fields>
-											<Text text="{LoadQueueTimeActualMinutes} minutes"/> 
+											<Text text="{LoadQueueTimeActualMinutes} мин"/>
 										</form:fields>
 									</form:FormElement>
 									<form:FormElement label="Load starts at" visible="{=(${LoadStartActualDateTime} !== null)}">
@@ -369,7 +461,7 @@
 									</form:FormElement>
 									<form:FormElement label="Load time" visible="{=(${LoadTimeActualMinutes} !== null)}">
 										<form:fields>
-											<Text text="{LoadTimeActualMinutes} minutes"/> 
+											<Text text="{LoadTimeActualMinutes} мин"/>
 										</form:fields>
 									</form:FormElement>
 									<form:FormElement label="Travel starts at" visible="{=(${TravelStartActualDateTime} !== null)}">
@@ -379,7 +471,7 @@
 									</form:FormElement>
 									<form:FormElement label="Travel time" visible="{=(${TravelTimeActualMinutes} !== null)}">
 										<form:fields>
-											<Text text="{TravelTimeActualMinutes} minutes"/> 
+											<Text text="{TravelTimeActualMinutes} мин"/>
 										</form:fields>
 									</form:FormElement>
 									<form:FormElement label="Arrived to Unload at" visible="{=(${UnloadQueueStartActualDateTime} !== null)}">
@@ -389,7 +481,7 @@
 									</form:FormElement>
 									<form:FormElement label="Unload Queue time" visible="{=(${UnloadQueueTimeActualMinutes} !== null)}">
 										<form:fields>
-											<Text text="{UnloadQueueTimeActualMinutes} minutes"/> 
+											<Text text="{UnloadQueueTimeActualMinutes} мин"/>
 										</form:fields>
 									</form:FormElement>
 									<form:FormElement label="Unload Stars at" visible="{=(${UnloadStartActualDateTime} !== null)}">
@@ -399,7 +491,7 @@
 									</form:FormElement>
 									<form:FormElement label="Unload time" visible="{=(${UnloadTimeActualMinutes} !== null)}">
 										<form:fields>
-											<Text text="{UnloadTimeActualMinutes} minutes"/> 
+											<Text text="{UnloadTimeActualMinutes} мин"/>
 										</form:fields>
 									</form:FormElement>
 									<form:FormElement label="Finished at" visible="{=(${EndActualDateTime} !== null)}">
@@ -411,37 +503,39 @@
 							</form:formContainers>
 						</form:Form>
 					</IconTabFilter>
-					<IconTabFilter icon="sap-icon://email" tooltip="Messages">
-						<comm:Timeline
-							id="idTimeline"
-							enableDoubleSided="true"
-							groupBy="MessageDateTime"
-							growingThreshold="0"
-							filterTitle="Job Title"
-							sortOldestFirst="true"
-							content="{Chat>/Messages}">
-							<comm:content>
-								<comm:TimelineItem
-										id="idTemplateItem"
-										dateTime="{Chat>MessageDateTime}"
-										title="{Chat>MessageTitle}"
-										userNameClickable="true"
-										text="{Chat>MessageText}"
-										userName="{Chat>UserName}"
-										filterValue="JobTitle"
-										icon="sap-icon://person-placeholder">
-								</comm:TimelineItem>
-							</comm:content>
-						</comm:Timeline>
+					<IconTabFilter id="chatIconTabFilterId" icon="sap-icon://email" text="Чат" count="{Chat/UnreadMessageCount}">
+						<VBox width="100%">
+							<comm:Timeline enableDoubleSided="true" groupBy="MessageDateTime" growingThreshold="0" filterTitle="Job Title" sortOldestFirst="true"
+								content="{Chat/Messages}">
+								<comm:content>
+									<comm:TimelineItem id="idTemplateItem" dateTime="{MessageDateTime}" title="{MessageTitle}" userNameClickable="true" text="{MessageText}"
+										userName="{UserName}" filterValue="JobTitle" icon="sap-icon://person-placeholder"></comm:TimelineItem>
+								</comm:content>
+							</comm:Timeline>
+							<Toolbar class="sapUiSmallMarginTop">
+								<Input value="{Chat/NewMessage}" width="90%" submit="onChatSendMessage"/>
+								<ToolbarSpacer/>
+								<Button icon="sap-icon://email" width="10%" press="onChatSendMessage"/>
+							</Toolbar>
+						</VBox>
 					</IconTabFilter>
 				</items>
 			</IconTabBar>
 		</semantic:content>
 		<semantic:customFooterContent>
-			<Button icon="sap-icon://decline" text="Cancel" press="onTransporationCancel"/>
-			<Button icon="sap-icon://accept" text="Release" press="onTransporationRelease"/>
-			<Button icon="sap-icon://accept" text="Send Requests" press="onTransporationSendRequests"/>
-			<Button icon="sap-icon://save" text="Save" press="onTransporationSave"/>
+			<CheckBox selected="{/AutoRefreshTransportation}" text="Автоматически обновлять"/>
+			<Button icon="sap-icon://refresh" text="Обновить" press="refreshScreenModel"/>
+			<RatingIndicator maxValue="5" class="sapUiTinyMargin" value="{RatingMark}" editable="true" 
+				visible="{= (${Status} === '080.CLOSED') }"/>
+			<Button icon="sap-icon://accept" text="Оценить" maxValue="5" visible="{= (${Status} === '080.CLOSED') }" press="onTransportationSubmitRating"/>
+			<Button icon="sap-icon://restart" text="Поиск Водителей" press="onRefreshAssignments" visible="{=  (${Status} === '010.DRAFT') ||
+																									(${Status} === '042.TRUCKS_FOUND') ||
+																									(${Status} === '044.TRUCKS_NOT_FOUND') }"/>
+			
+			<Button icon="sap-icon://decline" text="Прервать" press="onTransporationCancel" visible="{=(${Status} !== '010.DRAFT')}"/>
+			<Button icon="sap-icon://accept" text="Автоматическая Обработка" press="onTransporationRelease" visible="{=(${Status} === '020.CREATED') || (${Status} === '010.DRAFT')}"/>
+			<Button icon="sap-icon://email" text="Отправить Запросы" press="onTransporationSendRequests" visible="{= (${Status} === '042.TRUCKS_FOUND') }"/>
+			
 		</semantic:customFooterContent>
 	</semantic:MasterPage>
 </mvc:View>
