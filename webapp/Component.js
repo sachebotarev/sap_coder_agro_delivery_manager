@@ -12,7 +12,8 @@ sap.ui.define([
 	"com/pepsico/core/sap/ui/base/GlobalErrorHandler",
 	"sap/m/MessageBox",
 	"com/pepsico/core/sap/mobile/kapsel/push/PushNotificationService"
-], function(UIComponent, Device, models, MyException, JSONModel, RuntimeException, GlobalErrorHandler, MessageBox, PushNotificationService) {
+], function (UIComponent, Device, models, MyException, JSONModel, RuntimeException, GlobalErrorHandler, MessageBox,
+	PushNotificationService) {
 	"use strict";
 
 	return UIComponent.extend("my.sap_coder_agro_delivery_manager.Component", {
@@ -21,7 +22,7 @@ sap.ui.define([
 			manifest: "json"
 		},
 
-		init: function() {
+		init: function () {
 			this._oGlobalErrorHandler = new GlobalErrorHandler();
 			this._oGlobalErrorHandler.attachError({
 				fnHandler: (oEvent) => MessageBox.error((new RuntimeException({
@@ -40,38 +41,49 @@ sap.ui.define([
 				AutoRefresh: false,
 				AutoRefreshTransportation: false,
 				Region: "",
-				Regions: [
-					{Region: "46", Name: "Курская область"},
-					{Region: "50", Name: "Московская область"},
-					{Region: "77", Name: "г. Москва"},
-					{Region: "", Name: ""}
-				]
+				Regions: [{
+					Region: "46",
+					Name: "Курская область"
+				}, {
+					Region: "50",
+					Name: "Московская область"
+				}, {
+					Region: "77",
+					Name: "г. Москва"
+				}, {
+					Region: "",
+					Name: ""
+				}]
 			}), "viewModel");
-			
-			const tokenProvider = new Chatkit.TokenProvider({
-				url: "https://us1.pusherplatform.io/services/chatkit_token_provider/v1/581182a8-e5bc-46db-95f9-0fa82fa3974d/token"
-			});
-			this._oChatManager = new Chatkit.ChatManager({
-				instanceLocator: "v1:us1:581182a8-e5bc-46db-95f9-0fa82fa3974d",
-				userId: "dispatcher",
-				tokenProvider: tokenProvider
-			});
+
 			this._oChatCurrentUserConnected = $.Deferred();
-			this._oChatManager
-				.connect()
-				.then(currentUser => {
-					this._oChatCurrentUser = currentUser;
-					this._oChatCurrentUserConnected.resolve();
-				})
-				.catch(error => {
-					alert("error:", error);
+			$.getScript("https://unpkg.com/@pusher/chatkit/dist/web/chatkit.js")
+				.done(() => {
+					const tokenProvider = new Chatkit.TokenProvider({
+						url: "https://us1.pusherplatform.io/services/chatkit_token_provider/v1/581182a8-e5bc-46db-95f9-0fa82fa3974d/token"
+					});
+					this._oChatManager = new Chatkit.ChatManager({
+						instanceLocator: "v1:us1:581182a8-e5bc-46db-95f9-0fa82fa3974d",
+						userId: "dispatcher",
+						tokenProvider: tokenProvider
+					});
+
+					this._oChatManager
+						.connect()
+						.then(currentUser => {
+							this._oChatCurrentUser = currentUser;
+							this._oChatCurrentUserConnected.resolve();
+						})
+						.catch(error => {
+							alert("error:", error);
+						});
+
+					this._oPushNotificationService = new PushNotificationService({
+						sSmpApplicationId: "my.agro.transportation.management.driver.app",
+						sRestNotificationServiceUrl: "/hcp_mobile_services/restnotification"
+					});
 				});
-			
-			this._oPushNotificationService = new PushNotificationService({
-				sSmpApplicationId: "my.agro.transportation.management.driver.app",
-				sRestNotificationServiceUrl: "/hcp_mobile_services/restnotification"
-			});
-			
+
 			this.getRouter().initialize();
 		}
 	});

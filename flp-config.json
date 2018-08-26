@@ -1,0 +1,35 @@
+{
+    "application": {
+        "id": "",
+        "title": "my.sap_coder_agro_delivery_manager.sap_coder_agro_delivery_manager",
+        "description": "Агродиспетчер",
+        "type": "SAP_UI5_Component",
+        "componentUrl": "/",
+        "appUrl": "#sap_coder_agro_delivery_manager-Display",
+        "navigationComponentName": "my.sap_coder_agro_delivery_manager",
+        "intentSemanticObject": "sap_coder_agro_delivery_manager",
+        "intentAction": "Display",
+        "html5ApplicationName": "sapcoderagrodeliverymanage",
+        "HCPParentApplicationName": ""
+    },
+    "assignment": {
+        "groups": [
+            "8085e02d-dfd5-463c-8982-400f3ca8be4b-1535285409616"
+        ],
+        "contentPackages": [
+            "570ecc86-91f1-48d3-824a-f42910ca9120"
+        ],
+        "categories": []
+    },
+    "tile": {
+        "type": "StaticTile",
+        "title": "Агродиспетчер",
+        "subtitle": "SAP Кодер 2018",
+        "searchKeywords": "Агродиспетчер,SAP Кодер 2018",
+        "displayIconUrl": "sap-icon://shipping-status",
+        "displayInfoText": "",
+        "size": "1x1",
+        "serviceURL": "",
+        "refreshInterval": ""
+    }
+}
